@@ -35,7 +35,7 @@ const db = {
       id: "moments",
       category: "Momenti Condivisi",
       icon: "✨",
-      color: "#4ECDC4",
+      color: "#6ccef6",
       questions: [
         "Qual è il ricordo più bello che hai di noi due?",
         "Quale momento della nostra storia vorresti rivivere?",
@@ -63,7 +63,7 @@ const db = {
       id: "growth",
       category: "Crescita e Comprensione",
       icon: "🌱",
-      color: "#95E1D3",
+      color: "#bfd82d",
       questions: [
         "Cosa hai imparato su te stesso/a grazie alla nostra relazione?",
         "In che modo ti senti cambiato/a da quando stiamo insieme?",
@@ -119,7 +119,7 @@ const db = {
       id: "communication",
       category: "Comunicazione e Comprensione",
       icon: "💭",
-      color: "#6C5CE7",
+      color: "#6c5ce7",
       questions: [
         "Come posso sostenerti meglio nei momenti difficili?",
         "Qual è il modo migliore per comunicare con te quando sei arrabbiato/a?",

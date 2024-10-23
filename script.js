@@ -361,7 +361,9 @@ class LinkGame {
 
     if (!this.isFlipped) {
       this.playSound("flip");
+      // Aggiorniamo come viene mostrata la categoria per includere il colore
       this.categoryElement.textContent = this.currentCard.category;
+      this.categoryElement.style.color = this.currentCard.color;
       this.questionElement.textContent = this.currentCard.question;
 
       if (this.currentCard.category === "Verità Scomode") {
@@ -378,11 +380,40 @@ class LinkGame {
       this.cardElement.classList.remove("flipped");
       this.isFlipped = false;
 
+      // Reset del colore della categoria quando la carta viene girata
+      this.categoryElement.style.color = "";
       this.hideFeedbackInstructions();
       this.switchPlayer();
     }
 
     this.updateCardsRemaining();
+  }
+
+  shuffleDeck(playSound = true) {
+    this.currentDeck = [...this.fullDeck];
+
+    if (playSound) {
+      this.playSound("click");
+    }
+
+    for (let i = this.currentDeck.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [this.currentDeck[i], this.currentDeck[j]] = [
+        this.currentDeck[j],
+        this.currentDeck[i],
+      ];
+    }
+
+    this.cardElement.classList.remove("flipped");
+    this.isFlipped = false;
+    this.currentCard = this.currentDeck[this.currentDeck.length - 1];
+    this.updateCardDisplay();
+    this.updateCardsRemaining();
+
+    // Reset del colore della categoria quando il mazzo viene mischiato
+    this.categoryElement.style.color = "";
+    this.categoryElement.textContent = "";
+    this.questionElement.textContent = "";
   }
 
   shuffleDeck(playSound = true) {
