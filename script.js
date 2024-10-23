@@ -278,18 +278,30 @@ class LinkGame {
         ">
           <h2 style="margin-bottom: 1.5rem; color: #1a1c1e;">Inserisci i nomi dei giocatori</h2>
           <div style="display: flex; flex-direction: column; gap: 1rem;">
-            <input type="text" id="player1" placeholder="Nome Giocatore 1" style="
-              padding: 0.5rem;
-              border: 2px solid #6c5ce7;
-              border-radius: 0.5rem;
-              font-size: 1rem;
-            ">
-            <input type="text" id="player2" placeholder="Nome Giocatore 2" style="
-              padding: 0.5rem;
-              border: 2px solid #6c5ce7;
-              border-radius: 0.5rem;
-              font-size: 1rem;
-            ">
+            <input 
+              type="text" 
+              id="player1" 
+              placeholder="Nome Giocatore 1" 
+              maxlength="20"
+              style="
+                padding: 0.5rem;
+                border: 2px solid #6c5ce7;
+                border-radius: 0.5rem;
+                font-size: 1rem;
+                text-align: center;
+              ">
+            <input 
+              type="text" 
+              id="player2" 
+              placeholder="Nome Giocatore 2" 
+              maxlength="20"
+              style="
+                padding: 0.5rem;
+                border: 2px solid #6c5ce7;
+                border-radius: 0.5rem;
+                font-size: 1rem;
+                text-align: center;
+              ">
             <button id="startGame" style="
               padding: 0.5rem 1rem;
               background: #6c5ce7;
@@ -304,6 +316,27 @@ class LinkGame {
         </div>
       </div>
     `;
+
+    // Aggiungiamo gli stili per il placeholder
+    const style = document.createElement("style");
+    style.textContent = `
+      .players-form input::placeholder {
+        color: #666;
+        font-size: 1rem;
+      }
+      
+      .players-form input {
+        text-align: center;
+        font-size: 1rem;
+      }
+      
+      .players-form input:focus {
+        outline: none;
+        border-color: #6c5ce7;
+        box-shadow: 0 0 0 2px rgba(108, 92, 231, 0.2);
+      }
+    `;
+    document.head.appendChild(style);
 
     const formContainer = document.createElement("div");
     formContainer.innerHTML = formHTML;
