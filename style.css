@@ -1,16 +1,50 @@
-/* style.css */
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
+/* Base Styles & Reset */
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap");
 
-/* Previene la selezione del testo */
-* {
-  -webkit-user-select: none; /* Safari */
-  -moz-user-select: none; /* Firefox */
-  -ms-user-select: none; /* IE10+/Edge */
-  user-select: none; /* Standard */
-  -webkit-tap-highlight-color: transparent; /* Rimuove l'highlight al tap su mobile */
+:root {
+  /* Colors */
+  --color-primary: #6c5ce7;
+  --color-primary-light: #a388ee;
+  --color-secondary: #ff6b6b;
+  --color-secondary-light: #ff8787;
+  --color-text-dark: #1a1c1e;
+  --color-text-muted: #636e72;
+  --color-text-header: #535c68;
+  --color-background: #f8faff;
+  --color-background-alt: #eef2fc;
+  --color-white: #ffffff;
+
+  /* Spacing */
+  --spacing-xs: 0.5rem;
+  --spacing-sm: 1rem;
+  --spacing-md: 1.5rem;
+  --spacing-lg: 2rem;
+  --spacing-xl: 2.5rem;
+  --spacing-xxl: 3.5rem;
+
+  /* Border Radius */
+  --radius-sm: 12px;
+  --radius-md: 16px;
+  --radius-lg: 28px;
+
+  /* Shadows */
+  --shadow-card: 0 16px 40px rgba(0, 0, 0, 0.12);
+  --shadow-button: 0 8px 20px rgba(255, 107, 107, 0.25);
+  --shadow-button-hover: 0 12px 24px rgba(255, 107, 107, 0.3);
 }
 
-/* Permetti la selezione del testo per elementi specifici se necessario */
+/* Reset & Base Styles */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
 .selectable {
   -webkit-user-select: text;
   -moz-user-select: text;
@@ -18,23 +52,21 @@
   user-select: text;
 }
 
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
-
+/* Layout & Typography */
 body {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   min-height: 100vh;
-  padding: 20px;
+  padding: var(--spacing-md);
   font-family: "Inter", sans-serif;
-  /* Gradiente più moderno e sottile */
-  background: linear-gradient(135deg, #f8faff 0%, #eef2fc 100%);
-  color: #2d3436;
+  background: linear-gradient(
+    135deg,
+    var(--color-background) 0%,
+    var(--color-background-alt) 100%
+  );
+  color: var(--color-text-dark);
 }
 
 .container {
@@ -44,25 +76,18 @@ body {
   animation: fadeIn 1s ease-out;
 }
 
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
+/* Typography */
 h1 {
   font-size: 5rem;
   font-weight: 800;
-  color: #1a1c1e;
-  margin-bottom: 0.5rem;
+  color: var(--color-text-dark);
+  margin-bottom: var(--spacing-xs);
   letter-spacing: -0.06em;
-  /* Effetto gradient più intenso per "Closer" */
-  background: linear-gradient(135deg, #2d3436 0%, #6c5ce7 100%);
+  background: linear-gradient(
+    135deg,
+    var(--color-text-dark) 0%,
+    var(--color-primary) 100%
+  );
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   text-shadow: 0px 2px 30px rgba(108, 92, 231, 0.15);
@@ -70,8 +95,8 @@ h1 {
 
 .subtitle {
   font-size: 1.4rem;
-  color: #636e72;
-  margin-bottom: 3.5rem;
+  color: var(--color-text-muted);
+  margin-bottom: var(--spacing-xxl);
   font-weight: 500;
   letter-spacing: -0.02em;
   opacity: 0;
@@ -79,22 +104,12 @@ h1 {
   animation-delay: 0.3s;
 }
 
-@keyframes fadeInSubtitle {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
+/* Card Component */
 .deck {
   position: relative;
   width: 340px;
   height: 440px;
-  margin: 2rem auto;
+  margin: var(--spacing-lg) auto;
   perspective: 1200px;
 }
 
@@ -105,8 +120,8 @@ h1 {
   transform-style: preserve-3d;
   transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
   cursor: pointer;
-  border-radius: 28px;
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.12);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
 }
 
 .card.flipped {
@@ -123,16 +138,19 @@ h1 {
   align-items: center;
   justify-content: center;
   padding: 35px;
-  border-radius: 28px;
+  border-radius: var(--radius-lg);
   transition: all 0.3s ease;
 }
 
 .card-front {
-  background: linear-gradient(45deg, #6c5ce7, #a388ee);
-  color: white;
+  background: linear-gradient(
+    45deg,
+    var(--color-primary),
+    var(--color-primary-light)
+  );
+  color: var(--color-white);
   font-size: 2.2rem;
   text-align: center;
-  /* Effetto glassmorphism */
   backdrop-filter: blur(10px);
 }
 
@@ -144,11 +162,29 @@ h1 {
   backdrop-filter: blur(10px);
 }
 
+/* Card Content Styles */
+.player-turn {
+  position: absolute;
+  top: var(--spacing-md);
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--color-white);
+  background: rgba(0, 0, 0, 0.2);
+  padding: var(--spacing-xs) var(--spacing-md);
+  border-radius: var(--radius-sm);
+  backdrop-filter: blur(4px);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  z-index: 1;
+}
+
 .card-front .card-icon {
   font-size: 7.5rem;
   text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.2);
-  /* Aggiungiamo una leggera animazione hover */
   transition: transform 0.3s ease;
+  margin: var(--spacing-lg) 0;
 }
 
 .card:hover .card-icon {
@@ -166,15 +202,15 @@ h1 {
   font-size: 1rem;
   text-transform: uppercase;
   letter-spacing: 0.12em;
-  color: #535c68;
-  margin-bottom: 2.5rem;
+  color: var(--color-text-header);
+  margin-bottom: var(--spacing-xl);
   font-weight: 700;
 }
 
 .question {
   font-size: 1.5rem;
   line-height: 1.7;
-  color: #1a1c1e;
+  color: var(--color-text-dark);
   font-weight: 500;
   letter-spacing: -0.01em;
   flex-grow: 1;
@@ -182,34 +218,41 @@ h1 {
   align-items: center;
 }
 
+/* Game UI Components */
 .cards-remaining {
   font-size: 1rem;
-  color: #535c68;
-  margin: 1.5rem 0;
+  color: var(--color-text-header);
+  margin: var(--spacing-md) 0;
   font-weight: 600;
   letter-spacing: 0.02em;
 }
 
 .controls {
-  margin-top: 2.5rem;
+  margin-top: var(--spacing-xl);
   display: flex;
   justify-content: center;
 }
 
+/* Button Styles */
 button {
   padding: 14px 28px;
   font-size: 1.1rem;
   font-weight: 600;
-  color: white;
-  background: linear-gradient(135deg, #ff6b6b 0%, #ff8787 100%);
+  color: var(--color-white);
+  background: linear-gradient(
+    135deg,
+    var(--color-secondary) 0%,
+    var(--color-secondary-light) 100%
+  );
   border: none;
-  border-radius: 16px;
+  border-radius: var(--radius-md);
   cursor: pointer;
   transition: all 0.3s ease;
 }
 
 button:hover {
   transform: translateY(-3px);
+  box-shadow: var(--shadow-button-hover);
 }
 
 button:active {
@@ -217,15 +260,38 @@ button:active {
 }
 
 .shuffle-button {
-  background: linear-gradient(135deg, #ff6b6b 0%, #ff8787 100%);
-  box-shadow: 0 8px 20px rgba(255, 107, 107, 0.25);
+  background: linear-gradient(
+    135deg,
+    var(--color-secondary) 0%,
+    var(--color-secondary-light) 100%
+  );
+  box-shadow: var(--shadow-button);
 }
 
-.shuffle-button:hover {
-  box-shadow: 0 12px 24px rgba(255, 107, 107, 0.3);
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-/* Aggiungiamo media queries più raffinate */
+@keyframes fadeInSubtitle {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive Design */
 @media (max-width: 480px) {
   h1 {
     font-size: 3.5rem;
@@ -233,7 +299,7 @@ button:active {
 
   .subtitle {
     font-size: 1.2rem;
-    margin-bottom: 2.5rem;
+    margin-bottom: var(--spacing-xl);
   }
 
   .deck {
@@ -247,7 +313,7 @@ button:active {
 
   .controls {
     flex-direction: column;
-    gap: 1rem;
+    gap: var(--spacing-sm);
   }
 
   button {
@@ -264,45 +330,5 @@ button:active {
 
   .question {
     font-size: 1.6rem;
-  }
-}
-
-.player-info {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.5rem;
-  font-weight: 500;
-  min-width: 150px;
-  border-radius: 12px;
-  padding: 1rem;
-  transition: all 0.3s ease;
-}
-
-.player-name {
-  font-size: 1.2rem;
-  font-weight: 600;
-}
-
-.player-score {
-  font-size: 1rem;
-  opacity: 0.9;
-}
-
-.player-info.active {
-  background: #6c5ce7;
-  color: white;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(108, 92, 231, 0.2);
-}
-
-@media (max-width: 480px) {
-  .players-container {
-    flex-direction: column;
-    gap: 0 !important;
-  }
-
-  .player-info {
-    min-width: 120px;
   }
 }

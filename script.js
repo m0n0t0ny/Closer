@@ -315,7 +315,6 @@ class LinkGame {
   }
 
   getPlayerNames() {
-    // Crea il form per i nomi dei giocatori
     const formHTML = `
       <div class="players-form" style="
         position: fixed;
@@ -381,45 +380,10 @@ class LinkGame {
       formContainer.remove();
 
       // Inizializza il gioco
-      this.initializePlayersUI();
       this.shuffleDeck();
       this.addEventListeners();
-      this.updatePlayerTurn();
+      this.updateCardDisplay();
     });
-  }
-
-  initializePlayersUI() {
-    // Crea e inserisci l'UI dei giocatori
-    const playersUI = document.createElement("div");
-    playersUI.classList.add("players-container");
-    playersUI.style.cssText = `
-      display: flex;
-      justify-content: center;
-      gap: 2rem;
-      margin-bottom: 2rem;
-      font-size: 1.2rem;
-    `;
-
-    playersUI.innerHTML = `
-      <div id="player1-container" class="player-info" style="
-        padding: 0.5rem 1rem;
-        border-radius: 0.5rem;
-        transition: background 0.3s;
-      ">
-        <span class="player-name">${this.players[0].name}</span>
-      </div>
-      <div id="player2-container" class="player-info" style="
-        padding: 0.5rem 1rem;
-        border-radius: 0.5rem;
-        transition: background 0.3s;
-      ">
-        <span class="player-name">${this.players[1].name}</span>
-      </div>
-    `;
-
-    // Inserisci l'UI dei giocatori prima del deck
-    const deck = document.querySelector(".deck");
-    deck.parentNode.insertBefore(playersUI, deck);
   }
 
   updatePlayerTurn() {
@@ -440,7 +404,7 @@ class LinkGame {
 
   switchPlayer() {
     this.currentPlayerIndex = (this.currentPlayerIndex + 1) % 2;
-    this.updatePlayerTurn();
+    this.updateCardDisplay();
   }
 
   drawCard() {
@@ -513,7 +477,9 @@ class LinkGame {
 
   updateCardDisplay() {
     if (this.currentCard) {
+      const currentPlayer = this.players[this.currentPlayerIndex];
       this.cardFrontElement.innerHTML = `
+        <div class="player-turn">${currentPlayer.name}</div>
         <div class="card-icon">${this.currentCard.icon}</div>
       `;
 
@@ -522,7 +488,9 @@ class LinkGame {
       }, ${this.lightenColor(this.currentCard.color, 20)})`;
       this.cardFrontElement.style.background = gradient;
     } else {
+      const currentPlayer = this.players[this.currentPlayerIndex];
       this.cardFrontElement.innerHTML = `
+        <div class="player-turn">${currentPlayer.name}</div>
         <div class="card-icon">🔗</div>
       `;
       this.cardFrontElement.style.background =
