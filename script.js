@@ -276,12 +276,12 @@ class LinkGame {
           box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
           text-align: center;
         ">
-          <h2 style="margin-bottom: 1.5rem; color: #1a1c1e;">Inserisci i nomi dei giocatori</h2>
+          <h2 style="margin-bottom: 1.5rem; color: #1a1c1e;">Nomi giocatori</h2>
           <div style="display: flex; flex-direction: column; gap: 1rem;">
             <input 
               type="text" 
               id="player1" 
-              placeholder="Nome Giocatore 1" 
+              placeholder="Giocatore 1" 
               maxlength="20"
               style="
                 padding: 0.5rem;
@@ -293,7 +293,7 @@ class LinkGame {
             <input 
               type="text" 
               id="player2" 
-              placeholder="Nome Giocatore 2" 
+              placeholder="Giocatore 2" 
               maxlength="20"
               style="
                 padding: 0.5rem;
@@ -311,7 +311,7 @@ class LinkGame {
               font-size: 1rem;
               cursor: pointer;
               transition: all 0.3s ease;
-            ">Inizia il Gioco</button>
+            ">Inizia</button>
           </div>
         </div>
       </div>
