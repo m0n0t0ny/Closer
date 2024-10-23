@@ -198,9 +198,10 @@ h1 {
   font-size: 1rem;
   text-transform: uppercase;
   letter-spacing: 0.12em;
-  color: var(--color-text-header);
   margin-bottom: var(--spacing-xl);
   font-weight: 700;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
+  transition: all 0s;
 }
 
 .question {
@@ -229,20 +230,10 @@ button {
   font-size: 1.1rem;
   font-weight: 600;
   color: var(--color-white);
-  background: linear-gradient(
-    135deg,
-    var(--color-secondary) 0%,
-    var(--color-secondary-light) 100%
-  );
   border: none;
   border-radius: var(--radius-md);
   cursor: pointer;
   transition: all 0.3s ease;
-}
-
-button:hover {
-  transform: translateY(-3px);
-  box-shadow: var(--shadow-button-hover);
 }
 
 button:active {

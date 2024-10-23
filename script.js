@@ -150,7 +150,7 @@ class LinkGame {
         bottom: 20px;
         left: 50%;
         transform: translateX(-50%);
-        background: rgba(0, 0, 0, 0.8);
+        background: rgba(108, 92, 231, 1);
         color: white;
         padding: 10px 20px;
         border-radius: 20px;
@@ -327,8 +327,8 @@ class LinkGame {
     if (this.currentCard) {
       const currentPlayer = this.players[this.currentPlayerIndex];
       this.cardFrontElement.innerHTML = `
-        <div class="player-turn">${currentPlayer.name}</div>
         <div class="card-icon">${this.currentCard.icon}</div>
+        <div class="player-turn">${currentPlayer.name}</div>
       `;
 
       const gradient = `linear-gradient(45deg, ${
@@ -338,8 +338,8 @@ class LinkGame {
     } else {
       const currentPlayer = this.players[this.currentPlayerIndex];
       this.cardFrontElement.innerHTML = `
-        <div class="player-turn">${currentPlayer.name}</div>
         <div class="card-icon">🔗</div>
+        <div class="player-turn">${currentPlayer.name}</div>
       `;
       this.cardFrontElement.style.background =
         "linear-gradient(45deg, #6c5ce7, #a388ee)";
@@ -361,7 +361,14 @@ class LinkGame {
 
     if (!this.isFlipped) {
       this.playSound("flip");
-      // Aggiorniamo come viene mostrata la categoria per includere il colore
+
+      // Rimuoviamo la carta dal mazzo quando viene scoperta
+      this.currentDeck.pop();
+      this.updateCardsRemaining();
+
+      // Prepariamo la prossima carta
+      const nextCard = this.currentDeck[this.currentDeck.length - 1];
+
       this.categoryElement.textContent = this.currentCard.category;
       this.categoryElement.style.color = this.currentCard.color;
       this.questionElement.textContent = this.currentCard.question;
@@ -374,19 +381,15 @@ class LinkGame {
       this.isFlipped = true;
     } else {
       this.playSound("flip");
-      this.currentDeck.pop();
+
       this.currentCard = this.currentDeck[this.currentDeck.length - 1];
       this.updateCardDisplay();
       this.cardElement.classList.remove("flipped");
       this.isFlipped = false;
 
-      // Reset del colore della categoria quando la carta viene girata
-      this.categoryElement.style.color = "";
       this.hideFeedbackInstructions();
       this.switchPlayer();
     }
-
-    this.updateCardsRemaining();
   }
 
   shuffleDeck(playSound = true) {
@@ -410,10 +413,12 @@ class LinkGame {
     this.updateCardDisplay();
     this.updateCardsRemaining();
 
-    // Reset del colore della categoria quando il mazzo viene mischiato
+    this.categoryElement.style.transition = "none";
     this.categoryElement.style.color = "";
     this.categoryElement.textContent = "";
     this.questionElement.textContent = "";
+
+    void this.categoryElement.offsetWidth;
   }
 
   shuffleDeck(playSound = true) {
