@@ -1,0 +1,308 @@
+/* style.css */
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
+
+/* Previene la selezione del testo */
+* {
+  -webkit-user-select: none; /* Safari */
+  -moz-user-select: none; /* Firefox */
+  -ms-user-select: none; /* IE10+/Edge */
+  user-select: none; /* Standard */
+  -webkit-tap-highlight-color: transparent; /* Rimuove l'highlight al tap su mobile */
+}
+
+/* Permetti la selezione del testo per elementi specifici se necessario */
+.selectable {
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+  user-select: text;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 20px;
+  font-family: "Inter", sans-serif;
+  /* Gradiente più moderno e sottile */
+  background: linear-gradient(135deg, #f8faff 0%, #eef2fc 100%);
+  color: #2d3436;
+}
+
+.container {
+  text-align: center;
+  max-width: 800px;
+  margin: 0 auto;
+  animation: fadeIn 1s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+h1 {
+  font-size: 5rem;
+  font-weight: 800;
+  color: #1a1c1e;
+  margin-bottom: 0.5rem;
+  letter-spacing: -0.06em;
+  /* Effetto gradient più intenso per "Closer" */
+  background: linear-gradient(135deg, #2d3436 0%, #6c5ce7 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0px 2px 30px rgba(108, 92, 231, 0.15);
+}
+
+.subtitle {
+  font-size: 1.4rem;
+  color: #636e72;
+  margin-bottom: 3.5rem;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  opacity: 0;
+  animation: fadeInSubtitle 1s ease-out forwards;
+  animation-delay: 0.3s;
+}
+
+@keyframes fadeInSubtitle {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.deck {
+  position: relative;
+  width: 340px;
+  height: 440px;
+  margin: 2rem auto;
+  perspective: 1200px;
+}
+
+.card {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+  cursor: pointer;
+  border-radius: 28px;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.12);
+}
+
+.card.flipped {
+  transform: rotateY(180deg);
+}
+
+.card-face {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 35px;
+  border-radius: 28px;
+  transition: all 0.3s ease;
+}
+
+.card-front {
+  background: linear-gradient(45deg, #6c5ce7, #a388ee);
+  color: white;
+  font-size: 2.2rem;
+  text-align: center;
+  /* Effetto glassmorphism */
+  backdrop-filter: blur(10px);
+}
+
+.card-back {
+  background: rgba(255, 255, 255, 0.9);
+  transform: rotateY(180deg);
+  padding: 45px;
+  text-align: center;
+  backdrop-filter: blur(10px);
+}
+
+.card-front .card-icon {
+  font-size: 7.5rem;
+  text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.2);
+  /* Aggiungiamo una leggera animazione hover */
+  transition: transform 0.3s ease;
+}
+
+.card:hover .card-icon {
+  transform: scale(1.1);
+}
+
+.card-front div:last-child {
+  font-size: 2.5rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.category {
+  font-size: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: #535c68;
+  margin-bottom: 2.5rem;
+  font-weight: 700;
+}
+
+.question {
+  font-size: 1.5rem;
+  line-height: 1.7;
+  color: #1a1c1e;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  flex-grow: 1;
+  display: flex;
+  align-items: center;
+}
+
+.cards-remaining {
+  font-size: 1rem;
+  color: #535c68;
+  margin: 1.5rem 0;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.controls {
+  margin-top: 2.5rem;
+  display: flex;
+  justify-content: center;
+}
+
+button {
+  padding: 14px 28px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: white;
+  background: linear-gradient(135deg, #ff6b6b 0%, #ff8787 100%);
+  border: none;
+  border-radius: 16px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+button:hover {
+  transform: translateY(-3px);
+}
+
+button:active {
+  transform: translateY(-1px);
+}
+
+.shuffle-button {
+  background: linear-gradient(135deg, #ff6b6b 0%, #ff8787 100%);
+  box-shadow: 0 8px 20px rgba(255, 107, 107, 0.25);
+}
+
+.shuffle-button:hover {
+  box-shadow: 0 12px 24px rgba(255, 107, 107, 0.3);
+}
+
+/* Aggiungiamo media queries più raffinate */
+@media (max-width: 480px) {
+  h1 {
+    font-size: 3.5rem;
+  }
+
+  .subtitle {
+    font-size: 1.2rem;
+    margin-bottom: 2.5rem;
+  }
+
+  .deck {
+    width: 300px;
+    height: 400px;
+  }
+
+  .question {
+    font-size: 1.3rem;
+  }
+
+  .controls {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  button {
+    width: auto;
+    padding: 16px 24px;
+  }
+}
+
+@media (min-width: 1200px) {
+  .deck {
+    width: 360px;
+    height: 460px;
+  }
+
+  .question {
+    font-size: 1.6rem;
+  }
+}
+
+.player-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 500;
+  min-width: 150px;
+  border-radius: 12px;
+  padding: 1rem;
+  transition: all 0.3s ease;
+}
+
+.player-name {
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.player-score {
+  font-size: 1rem;
+  opacity: 0.9;
+}
+
+.player-info.active {
+  background: #6c5ce7;
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(108, 92, 231, 0.2);
+}
+
+@media (max-width: 480px) {
+  .players-container {
+    flex-direction: column;
+    gap: 0 !important;
+  }
+
+  .player-info {
+    min-width: 120px;
+  }
+}
