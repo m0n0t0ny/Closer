@@ -27,7 +27,6 @@ class LinkGame {
   }
 
   addIntimateToggle() {
-    // Creiamo il container per il toggle
     const toggleContainer = document.createElement("div");
     toggleContainer.classList.add("intimate-mode-toggle");
     toggleContainer.innerHTML = `
@@ -40,7 +39,6 @@ class LinkGame {
       </div>
     `;
 
-    // Aggiungiamo gli stili
     const style = document.createElement("style");
     style.textContent = `
       .intimate-mode-toggle {
@@ -112,24 +110,16 @@ class LinkGame {
       }
     `;
 
-    // Aggiungiamo gli stili al documento
     document.head.appendChild(style);
-
-    // Aggiungiamo il container al body
     document.body.appendChild(toggleContainer);
 
-    // Aggiungiamo l'event listener
     const toggleCheckbox = document.getElementById("intimateToggle");
     if (toggleCheckbox) {
       toggleCheckbox.addEventListener("change", (e) => {
         this.intimateMode = e.target.checked;
-        console.log("Modalità intima cambiata:", this.intimateMode);
-
-        // Ricrea il mazzo con le nuove impostazioni
         this.initializeFullDeck();
         this.shuffleDeck();
 
-        // Feedback visivo
         const message = this.intimateMode
           ? "Modalità intima attivata 💝"
           : "Modalità intima disattivata";
@@ -139,7 +129,6 @@ class LinkGame {
     }
   }
 
-  // Aggiunta di un metodo per verificare il contenuto del mazzo
   debugDeck() {
     console.log("--- Stato attuale del mazzo ---");
     console.log("Modalità intima:", this.intimateMode);
@@ -154,7 +143,6 @@ class LinkGame {
     notification.classList.add("game-notification");
     notification.textContent = message;
 
-    // Stili per la notifica
     const style = document.createElement("style");
     style.textContent = `
       .game-notification {
@@ -182,7 +170,6 @@ class LinkGame {
     document.head.appendChild(style);
     document.body.appendChild(notification);
 
-    // Rimuoviamo la notifica dopo l'animazione
     setTimeout(() => {
       notification.remove();
     }, 2000);
@@ -235,7 +222,6 @@ class LinkGame {
     }
   }
 
-  // Aggiorna initializeFullDeck per includere le istruzioni nelle carte
   initializeFullDeck() {
     this.fullDeck = db.categories
       .filter((category) => !category.isIntimate || this.intimateMode)
@@ -253,7 +239,6 @@ class LinkGame {
   initializeSounds() {
     this.sounds = {
       flip: new Audio("./sounds/flip.mp3"),
-      shuffle: new Audio("./sounds/shuffle.mp3"),
       click: new Audio("./sounds/click.mp3"),
     };
 
@@ -268,50 +253,6 @@ class LinkGame {
       sound.currentTime = 0;
       sound.play();
     }
-  }
-
-  initializeElements() {
-    document.querySelector(".subtitle").textContent = db.subtitle;
-
-    this.cardElement = document.querySelector(".card");
-    this.categoryElement = document.querySelector(".category");
-    this.questionElement = document.querySelector(".question");
-    this.cardFrontElement = document.querySelector(".card-front");
-    this.cardBackElement = document.querySelector(".card-back");
-  }
-
-  initializeFullDeck() {
-    console.log("Stato modalità intima:", this.intimateMode);
-    console.log(
-      "Categorie prima del filtro:",
-      db.categories.map((c) => c.category)
-    );
-
-    // Filtra le categorie prima di creare il mazzo
-    const filteredCategories = db.categories.filter((category) => {
-      // Una categoria viene inclusa se:
-      // - Non è intima (isIntimate non è presente o è false)
-      // - È intima ma la modalità intima è attiva
-      const shouldInclude =
-        !category.isIntimate || (category.isIntimate && this.intimateMode);
-      console.log(
-        `Categoria ${category.category}: isIntimate=${category.isIntimate}, inclusa=${shouldInclude}`
-      );
-      return shouldInclude;
-    });
-
-    // Creiamo il mazzo dalle categorie filtrate
-    this.fullDeck = filteredCategories.flatMap((category) =>
-      category.questions.map((question) => ({
-        category: category.category,
-        question: question,
-        icon: category.icon,
-        color: category.color,
-        instructions: category.instructions,
-      }))
-    );
-
-    console.log("Numero di carte nel mazzo:", this.fullDeck.length);
   }
 
   getPlayerNames() {
@@ -375,104 +316,11 @@ class LinkGame {
         document.getElementById("player2").value.trim() || "Giocatore 2";
 
       this.players = [{ name: player1Name }, { name: player2Name }];
-
-      // Rimuovi il form
       formContainer.remove();
-
-      // Inizializza il gioco
       this.shuffleDeck();
       this.addEventListeners();
       this.updateCardDisplay();
     });
-  }
-
-  updatePlayerTurn() {
-    // Rimuovi l'evidenziazione da entrambi i giocatori
-    document.querySelectorAll(".player-info").forEach((container) => {
-      container.style.background = "transparent";
-      container.style.color = "#1a1c1e";
-    });
-
-    // Evidenzia il giocatore corrente
-    const currentPlayerContainer = document.getElementById(
-      `player${this.currentPlayerIndex + 1}-container`
-    );
-    currentPlayerContainer.style.background =
-      this.players[this.currentPlayerIndex].color || "#6c5ce7";
-    currentPlayerContainer.style.color = "white";
-  }
-
-  switchPlayer() {
-    this.currentPlayerIndex = (this.currentPlayerIndex + 1) % 2;
-    this.updateCardDisplay();
-  }
-
-  drawCard() {
-    if (this.currentDeck.length === 0) {
-      alert('Il mazzo è vuoto! Clicca "Mischia il mazzo" per ricominciare.');
-      return;
-    }
-
-    if (!this.isFlipped) {
-      this.playSound("flip");
-      this.categoryElement.textContent = this.currentCard.category;
-      this.questionElement.textContent = this.currentCard.question;
-
-      // Mostra i suggerimenti se è una carta della categoria feedback
-      if (this.currentCard.category === "Verità Scomode") {
-        this.showFeedbackInstructions();
-      }
-
-      this.cardElement.classList.add("flipped");
-      this.isFlipped = true;
-    } else {
-      this.playSound("flip");
-      this.currentDeck.pop();
-      this.currentCard = this.currentDeck[this.currentDeck.length - 1];
-      this.updateCardDisplay();
-      this.cardElement.classList.remove("flipped");
-      this.isFlipped = false;
-
-      // Rimuovi i suggerimenti quando la carta viene rigirata
-      this.hideFeedbackInstructions();
-
-      this.switchPlayer();
-    }
-
-    this.updateCardsRemaining();
-  }
-
-  shuffleDeck() {
-    // Reset del mazzo
-    this.currentDeck = [...this.fullDeck];
-
-    console.log("Mescolando il mazzo. Numero carte:", this.currentDeck.length);
-    console.log(
-      "Categorie presenti:",
-      new Set(this.currentDeck.map((card) => card.category))
-    );
-
-    // Fisher-Yates shuffle
-    for (let i = this.currentDeck.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [this.currentDeck[i], this.currentDeck[j]] = [
-        this.currentDeck[j],
-        this.currentDeck[i],
-      ];
-    }
-
-    // Reset dello stato della carta
-    this.cardElement.classList.remove("flipped");
-    this.isFlipped = false;
-
-    // Imposta la prima carta
-    this.currentCard = this.currentDeck[this.currentDeck.length - 1];
-    this.updateCardDisplay();
-    this.updateCardsRemaining();
-
-    // Reset del testo
-    this.categoryElement.textContent = "";
-    this.questionElement.textContent = "";
   }
 
   updateCardDisplay() {
@@ -496,6 +344,69 @@ class LinkGame {
       this.cardFrontElement.style.background =
         "linear-gradient(45deg, #6c5ce7, #a388ee)";
     }
+  }
+
+  switchPlayer() {
+    this.currentPlayerIndex = (this.currentPlayerIndex + 1) % 2;
+    this.updateCardDisplay();
+  }
+
+  drawCard() {
+    if (this.currentDeck.length === 0) {
+      this.currentDeck = [...this.fullDeck];
+      this.shuffleDeck(false);
+      this.showNotification("Nuovo mazzo creato! 🎴");
+      return;
+    }
+
+    if (!this.isFlipped) {
+      this.playSound("flip");
+      this.categoryElement.textContent = this.currentCard.category;
+      this.questionElement.textContent = this.currentCard.question;
+
+      if (this.currentCard.category === "Verità Scomode") {
+        this.showFeedbackInstructions();
+      }
+
+      this.cardElement.classList.add("flipped");
+      this.isFlipped = true;
+    } else {
+      this.playSound("flip");
+      this.currentDeck.pop();
+      this.currentCard = this.currentDeck[this.currentDeck.length - 1];
+      this.updateCardDisplay();
+      this.cardElement.classList.remove("flipped");
+      this.isFlipped = false;
+
+      this.hideFeedbackInstructions();
+      this.switchPlayer();
+    }
+
+    this.updateCardsRemaining();
+  }
+
+  shuffleDeck(playSound = true) {
+    this.currentDeck = [...this.fullDeck];
+
+    if (playSound) {
+      this.playSound("click");
+    }
+
+    for (let i = this.currentDeck.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [this.currentDeck[i], this.currentDeck[j]] = [
+        this.currentDeck[j],
+        this.currentDeck[i],
+      ];
+    }
+
+    this.cardElement.classList.remove("flipped");
+    this.isFlipped = false;
+    this.currentCard = this.currentDeck[this.currentDeck.length - 1];
+    this.updateCardDisplay();
+    this.updateCardsRemaining();
+    this.categoryElement.textContent = "";
+    this.questionElement.textContent = "";
   }
 
   lightenColor(color, percent) {
@@ -523,15 +434,8 @@ class LinkGame {
   }
 
   addEventListeners() {
-    // Click sulla carta
     this.cardElement.addEventListener("click", () => {
       this.drawCard();
-    });
-
-    // Pulsante mischia
-    document.querySelector(".shuffle-button").addEventListener("click", () => {
-      this.playSound("click");
-      this.shuffleDeck();
     });
   }
 }
@@ -539,7 +443,6 @@ class LinkGame {
 document.addEventListener("DOMContentLoaded", () => {
   const game = new LinkGame();
 
-  // Debug iniziale
   setTimeout(() => {
     game.debugDeck();
   }, 1000);

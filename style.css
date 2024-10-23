@@ -184,7 +184,7 @@ h1 {
   font-size: 7.5rem;
   text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.2);
   transition: transform 0.3s ease;
-  margin-bottom: 1rem !important;
+  margin-bottom: 1.5rem !important;
 }
 
 .card:hover .card-icon {
@@ -225,12 +225,6 @@ h1 {
   letter-spacing: 0.02em;
 }
 
-.controls {
-  margin-top: var(--spacing-xl);
-  display: flex;
-  justify-content: center;
-}
-
 /* Button Styles */
 button {
   padding: 14px 28px;
@@ -255,15 +249,6 @@ button:hover {
 
 button:active {
   transform: translateY(-1px);
-}
-
-.shuffle-button {
-  background: linear-gradient(
-    135deg,
-    var(--color-secondary) 0%,
-    var(--color-secondary-light) 100%
-  );
-  box-shadow: var(--shadow-button);
 }
 
 /* Animations */
@@ -307,16 +292,6 @@ button:active {
 
   .question {
     font-size: 1.3rem;
-  }
-
-  .controls {
-    flex-direction: column;
-    gap: var(--spacing-sm);
-  }
-
-  button {
-    width: auto;
-    padding: 16px 24px;
   }
 }
 
