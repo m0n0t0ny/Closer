@@ -276,7 +276,7 @@ class LinkGame {
           box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
           text-align: center;
         ">
-          <h2 style="margin-bottom: 1.5rem; color: #1a1c1e;">Nomi giocatori</h2>
+          <h2 style="margin-bottom: 1.5rem; color: #1a1c1e;">Nomi Giocatori</h2>
           <div style="display: flex; flex-direction: column; gap: 1rem;">
             <input 
               type="text" 
