@@ -982,6 +982,10 @@ class Closer {
       ];
     }
 
+    if (this.shareButton) {
+      this.shareButton.style.display = "none";
+    }
+
     this.cardElement.classList.remove("flipped");
     this.isFlipped = false;
     this.currentCard = this.currentDeck[this.currentDeck.length - 1];
