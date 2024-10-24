@@ -158,7 +158,7 @@ class LinkGame {
       left: 0;
       right: 0;
       width: 100%;
-      background: rgba(255, 71, 87, 0.95);
+      background: #e46f16;
       color: white;
       box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
       z-index: 1000;
@@ -175,7 +175,7 @@ class LinkGame {
       justify-content: center;
       cursor: pointer;
       border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-      background: rgba(255, 71, 87, 1);
+      background: #e46f16;
       flex-wrap: wrap;
       gap: 4px;
     `;
@@ -291,36 +291,54 @@ class LinkGame {
     document.head.appendChild(style);
 
     let isExpanded = false;
-    const toggleExpansion = (event) => {
-      if (
-        !isExpanded ||
-        event.target === header ||
-        event.target === arrow ||
-        event.target === title
-      ) {
-        isExpanded = !isExpanded;
-        if (isExpanded) {
-          contentWrapper.style.maxHeight = "none";
-          contentWrapper.style.opacity = "1";
-          const headerHeight = header.offsetHeight;
-          const contentHeight = contentInner.offsetHeight + 40;
-          const maxAvailableHeight = window.innerHeight * 0.7;
-          const finalHeight = Math.min(contentHeight, maxAvailableHeight);
 
-          contentWrapper.style.maxHeight = `${finalHeight}px`;
-          contentWrapper.style.overflow =
-            contentHeight > maxAvailableHeight ? "auto" : "hidden";
+    // Funzione per aprire il pannello
+    const openInstructions = () => {
+      isExpanded = true;
+      contentWrapper.style.maxHeight = "none";
+      contentWrapper.style.opacity = "1";
+      const contentHeight = contentInner.offsetHeight + 40;
+      const maxAvailableHeight = window.innerHeight * 0.7;
+      const finalHeight = Math.min(contentHeight, maxAvailableHeight);
 
-          instructionsElement.style.transform = "translateY(0)";
-          arrow.style.transform = "rotate(0deg)";
-        } else {
-          instructionsElement.style.transform = "translateY(calc(100% - 45px))";
-          arrow.style.transform = "rotate(180deg)";
-          contentWrapper.style.opacity = "0";
-          contentWrapper.style.maxHeight = "0";
-        }
-      }
+      contentWrapper.style.maxHeight = `${finalHeight}px`;
+      contentWrapper.style.overflow =
+        contentHeight > maxAvailableHeight ? "auto" : "hidden";
+
+      instructionsElement.style.transform = "translateY(0)";
+      arrow.style.transform = "rotate(0deg)";
     };
+
+    // Funzione per chiudere il pannello
+    const closeInstructions = () => {
+      isExpanded = false;
+      instructionsElement.style.transform = "translateY(calc(100% - 45px))";
+      arrow.style.transform = "rotate(180deg)";
+      contentWrapper.style.opacity = "0";
+      contentWrapper.style.maxHeight = "0";
+    };
+
+    // Click sul background (intero elemento instructions)
+    instructionsElement.addEventListener("click", (event) => {
+      if (event.target === instructionsElement && isExpanded) {
+        closeInstructions();
+      }
+    });
+
+    // Click sull'header
+    header.addEventListener("click", (event) => {
+      event.stopPropagation();
+      if (isExpanded) {
+        closeInstructions();
+      } else {
+        openInstructions();
+      }
+    });
+
+    // Click sul content (previene la chiusura)
+    contentWrapper.addEventListener("click", (event) => {
+      event.stopPropagation();
+    });
 
     // Assembla gli elementi
     header.appendChild(arrow);
@@ -328,14 +346,6 @@ class LinkGame {
     contentWrapper.appendChild(contentInner);
     instructionsElement.appendChild(header);
     instructionsElement.appendChild(contentWrapper);
-
-    // Aggiungi i listener
-    header.addEventListener("click", toggleExpansion);
-    instructionsElement.addEventListener("click", (event) => {
-      if (event.target === instructionsElement && isExpanded) {
-        toggleExpansion(event);
-      }
-    });
 
     // Previeni la propagazione dei click dal contenuto
     contentWrapper.addEventListener("click", (event) => {
