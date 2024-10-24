@@ -15,6 +15,7 @@ class LinkGame {
     this.initializeFullDeck();
     this.addInstructions();
     this.getPlayerNames();
+    this.addGameGuide();
   }
 
   initializeElements() {
@@ -23,6 +24,175 @@ class LinkGame {
     this.questionElement = document.querySelector(".question");
     this.cardFrontElement = document.querySelector(".card-front");
     this.cardBackElement = document.querySelector(".card-back");
+  }
+
+  addGameGuide() {
+    const helpButton = document.createElement("button");
+    helpButton.innerHTML = "❔";
+    helpButton.style.cssText = `
+    width: 40px;
+    height: 40px;
+    scale: 1/1;
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 10px;
+    background: #6c5ce7;
+    color: white;
+    border: none;
+    border-radius: 9999px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+    z-index: 1000;
+  `;
+
+    // Crea il pannello delle istruzioni
+    const guidePanel = document.createElement("div");
+    guidePanel.style.cssText = `
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0.9);
+    width: 90%;
+    max-width: 500px;
+    background: white;
+    border-radius: 20px;
+    font-size: 12px;
+    padding: 30px 15px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+    z-index: 1001;
+  `;
+
+    // Crea l'overlay scuro
+    const overlay = document.createElement("div");
+    overlay.style.cssText = `
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.7);
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+    z-index: 1000;
+  `;
+
+    // Contenuto della guida
+    guidePanel.innerHTML = `
+    <div style="position: relative;">
+      <h2 style="
+        color: #6c5ce7;
+        font-size: 1.5rem;
+        margin-bottom: 30px;
+        text-align: center;
+      ">Come si gioca</h2>
+      
+      <button id="closeGuide" style="
+        position: absolute;
+        scale: 1/1;
+        top: -30px;
+        right: -20px;
+        border: none;
+        background: #ffffff00;
+        color: #ea5957;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+      ">×</button>
+
+      <div style="margin-bottom: 25px;">
+        <h3 style="
+          color: #1a1c1e;
+          font-size: 1.1rem;
+          margin-bottom: 10px;
+        ">📌 Scopo del Gioco</h3>
+        <p style="
+          color: #4a4a4a;
+          line-height: 1.5;
+          margin-bottom: 15px;
+        ">Closer è un gioco di carte progettato per approfondire e rafforzare le relazioni di coppia attraverso domande significative e momenti di condivisione autentica.</p>
+      </div>
+
+      <div style="margin-bottom: 25px;">
+        <h3 style="
+          color: #1a1c1e;
+          font-size: 1.1rem;
+          margin-bottom: 10px;
+        ">🎮 Come Giocare</h3>
+        <ul style="
+          color: #4a4a4a;
+          line-height: 1.5;
+          padding-left: 20px;
+          margin-bottom: 15px;
+        ">
+          <li>Il gioco si svolge a turno tra due giocatori</li>
+          <li>Cliccate sulla carta per girarla e rivelare una domanda</li>
+          <li>Leggete la domanda ad alta voce e rispondete con sincerità</li>
+          <li>Prendetevi il tempo necessario per rispondere e discutere</li>
+          <li>Cliccate nuovamente sulla carta per passare al turno successivo</li>
+        </ul>
+      </div>
+
+      <div>
+        <h3 style="
+          color: #1a1c1e;
+          font-size: 1.1rem;
+          margin-bottom: 10px;
+        ">💡 Consigli</h3>
+        <ul style="
+          color: #4a4a4a;
+          line-height: 1.5;
+          padding-left: 20px;
+        ">
+          <li>Scegliete un momento tranquillo senza distrazioni</li>
+          <li>Ascoltate con attenzione e senza giudicare</li>
+          <li>Siate onesti nelle vostre risposte</li>
+          <li>Non abbiate fretta, godetevi il momento di condivisione</li>
+          <li>La modalità intima può essere attivata quando vi sentite pronti</li>
+        </ul>
+      </div>
+    </div>
+  `;
+
+    // Funzioni per mostrare/nascondere la guida
+    const showGuide = () => {
+      overlay.style.opacity = "1";
+      overlay.style.visibility = "visible";
+      guidePanel.style.opacity = "1";
+      guidePanel.style.visibility = "visible";
+      guidePanel.style.transform = "translate(-50%, -50%) scale(1)";
+    };
+
+    const hideGuide = () => {
+      overlay.style.opacity = "0";
+      overlay.style.visibility = "hidden";
+      guidePanel.style.opacity = "0";
+      guidePanel.style.visibility = "hidden";
+      guidePanel.style.transform = "translate(-50%, -50%) scale(0.9)";
+    };
+
+    // Eventi
+    helpButton.addEventListener("click", showGuide);
+    overlay.addEventListener("click", hideGuide);
+    guidePanel
+      .querySelector("#closeGuide")
+      .addEventListener("click", hideGuide);
+
+    // Previeni la chiusura quando si clicca sul pannello
+    guidePanel.addEventListener("click", (e) => e.stopPropagation());
+
+    // Aggiungi gli elementi al DOM
+    document.body.appendChild(helpButton);
+    document.body.appendChild(overlay);
+    document.body.appendChild(guidePanel);
   }
 
   addIntimateToggle() {
