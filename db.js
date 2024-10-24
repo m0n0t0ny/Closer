@@ -6,8 +6,8 @@ const db = {
     {
       id: "emotions",
       category: "Emozioni e Bisogni",
-      icon: "❤️",
-      color: "#FF6B6B",
+      icon: "💕",
+      color: "#d7868a",
       questions: [
         "Che cosa vorresti sentirti dire più spesso?",
         "Qual è il gesto d'affetto che ti fa sentire più amato/a?",
@@ -90,8 +90,8 @@ const db = {
     {
       id: "dreams",
       category: "Desideri e Sogni",
-      icon: "⭐",
-      color: "#ffc83d",
+      icon: "🌠",
+      color: "#3974d5",
       questions: [
         "Qual è un sogno che vorresti realizzare insieme?",
         "Come immagini la nostra relazione tra 5 anni?",
@@ -118,8 +118,8 @@ const db = {
     {
       id: "communication",
       category: "Comunicazione e Comprensione",
-      icon: "💭",
-      color: "#6c5ce7",
+      icon: "🤝",
+      color: "#f5cb48",
       questions: [
         "Come posso sostenerti meglio nei momenti difficili?",
         "Qual è il modo migliore per comunicare con te quando sei arrabbiato/a?",
@@ -146,9 +146,9 @@ const db = {
     {
       id: "intimacy",
       category: "Intimità",
-      icon: "💝",
-      color: "#FF69B4",
-      isIntimate: true,
+      icon: "🔥",
+      color: "#e46f16",
+      isIntimacy: true,
       questions: [
         "Qual è la tua più grande fantasia che non hai mai condiviso con me?",
         "Quale parte del mio corpo ti attrae di più e perché?",
@@ -173,11 +173,11 @@ const db = {
       ],
     },
     {
-      id: "feedback",
-      category: "Verità Scomode",
-      icon: "🔥",
-      color: "#e46f16",
-      isFeedback: true,
+      id: "tabu",
+      category: "Tabù",
+      icon: "💣",
+      color: "#383838",
+      isTabu: true,
       questions: [
         "Quale parte del mio aspetto fisico cambieresti se potessi?",
         "Quale mia abitudine ti fa venire voglia di urlarmi contro?",
@@ -209,6 +209,65 @@ const db = {
         - È ok prendersi una pausa se le emozioni sono troppo intense
         - Concludete sempre con qualcosa che amate dell'altro
       `,
+    },
+    {
+      id: "obligations",
+      category: "Obblighi",
+      icon: "🔗",
+      color: "#6c5ae4",
+      isObligation: true,
+      questions: [
+        "Devi farmi un massaggio rilassante di almeno 15 minuti",
+        "Devi preparare per me la mia cena preferita questa settimana",
+        "Devi fare con me quell'attività che ti sei sempre rifiutato/a di provare",
+        "Devi regalarmi un momento di coccole senza telefono per almeno 30 minuti",
+        "Devi organizzare per me una serata romantica a sorpresa",
+        "Devi farmi un bagno caldo con candele e massaggio",
+        "Devi essere il mio/la mia schiavo/a personale per un'ora",
+        "Devi ballare per me la tua canzone più sexy",
+        "Devi portarmi a cena nel mio ristorante preferito",
+        "Devi farmi da cameriere/a personale per una serata intera",
+        "Devi realizzare una mia fantasia erotica (nei limiti del consenso)",
+        "Devi farmi un servizio fotografico sexy solo per me",
+        "Devi essere bendato/a e lasciarmi fare quello che voglio per 10 minuti",
+        "Devi darmi il controllo completo su di te per 20 minuti",
+        "Devi fare strip-tease per me con la canzone che scelgo",
+        "Devi farmi un massaggio erotico con oli essenziali",
+        "Devi essere il mio cuscino umano per un intero film",
+        "Devi portarmi la colazione a letto nel weekend",
+        "Devi farmi 3 complimenti sinceri ogni giorno per una settimana",
+        "Devi comprare e indossare per me quello che scelgo (nei limiti del budget concordato)",
+      ],
+      instructions: `
+        💡 Ricorda che gli obblighi sono un'opportunità, non un vincolo:
+
+        • Il consenso è sempre la priorità
+        - Nessun obbligo deve mai farti sentire a disagio o in pericolo
+        - Se qualcosa ti mette ansia, parlane apertamente col partner
+        - È perfettamente ok dire "non me la sento" o "non ora"
+        - Non usare mai gli obblighi per forzare limiti inappropriati
+
+        • Focus sulla connessione
+        - Gli obblighi sono un modo per esplorare nuove dimensioni insieme
+        - L'obiettivo è rafforzare l'intimità e la fiducia reciproca
+        - Non è una competizione o un modo per "vincere" sull'altro
+        - Cerca di vedere ogni obbligo come un'opportunità di crescita
+
+        • Comunicazione aperta
+        - Discutete apertamente di eventuali modifiche agli obblighi
+        - Stabilite insieme limiti e confini chiari
+        - Siate onesti riguardo le vostre sensazioni
+        - Create un ambiente sicuro per esprimere dubbi o preoccupazioni
+
+        • Divertimento e leggerezza
+        - Mantieni un approccio giocoso e leggero
+        - Non prenderti troppo sul serio
+        - Goditi il processo di scoperta reciproca
+        - Celebra i momenti di connessione che si creano
+
+        💡 Ricorda: Lo scopo è avvicinarvi e connettervi maggiormente, non allontanarvi o creare tensioni. Sii aperto/a a nuove esperienze ma sempre nel rispetto dei tuoi limiti e di quelli del partner.
+      `,
+      isIntimate: true,
     },
   ],
 };

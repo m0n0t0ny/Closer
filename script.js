@@ -8,10 +8,12 @@ class Closer {
     this.currentCard = null;
     this.players = null;
     this.currentPlayerIndex = 0;
-    this.intimateMode = false;
+    this.intimacyMode = false;
+    this.tabuMode = false;
+    this.obligationsMode = false;
     this.initializeSounds();
     this.initializeElements();
-    this.addIntimateToggle();
+    this.addIntimacyToggle();
     this.initializeFullDeck();
     this.addInstructions();
     this.getPlayerNames();
@@ -155,7 +157,7 @@ class Closer {
           <li>Scegliete un momento tranquillo senza distrazioni</li>
           <li>Ascoltate con attenzione e senza giudicare</li>
           <li>Siate onesti nelle vostre risposte</li>
-          <li>La modalità verità scomode può essere attivata quando vi sentite pronti</li>
+          <li>La modalità Tabù può essere attivata quando vi sentite pronti</li>
           <li>Attiva la modalità intima per domande sull'intimità sessuale</li>
         </ul>
       </div>
@@ -195,23 +197,32 @@ class Closer {
     document.body.appendChild(guidePanel);
   }
 
-  addIntimateToggle() {
+  addIntimacyToggle() {
     const toggleContainer = document.createElement("div");
     toggleContainer.classList.add("toggles-container");
     toggleContainer.innerHTML = `
-      <div class="toggle-wrapper">
-        <label class="toggle">
-          <input type="checkbox" id="intimateToggle">
-          <span class="toggle-slider"></span>
-        </label>
-        <span class="toggle-label">Modalità Intima</span>
-      </div>
-      <div class="toggle-wrapper">
-        <label class="toggle">
-          <input type="checkbox" id="truthToggle">
-          <span class="toggle-slider"></span>
-        </label>
-        <span class="toggle-label">Verità Scomode</span>
+      <div class="toggles-wrapper">
+        <div class="toggle-wrapper">
+          <label class="toggle">
+            <input type="checkbox" id="intimacyToggle">
+            <span class="toggle-slider"></span>
+          </label>
+          <span class="toggle-label">Intimità</span>
+        </div>
+        <div class="toggle-wrapper">
+          <label class="toggle">
+            <input type="checkbox" id="tabuToggle">
+            <span class="toggle-slider"></span>
+          </label>
+          <span class="toggle-label">Tabù</span>
+        </div>
+        <div class="toggle-wrapper">
+          <label class="toggle">
+            <input type="checkbox" id="obligationsToggle">
+            <span class="toggle-slider"></span>
+          </label>
+          <span class="toggle-label">Obblighi</span>
+        </div>
       </div>
     `;
 
@@ -225,14 +236,22 @@ class Closer {
         flex-wrap: wrap;
       }
   
+      .toggles-wrapper {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+        padding: 16px;
+        background: white;
+        border-radius: 24px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      }
+  
       .toggle-wrapper {
+        width:100%;
         display: flex;
         align-items: center;
         gap: 10px;
-        padding: 8px 16px;
-        background: white;
-        border-radius: 20px;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
       }
   
       .toggle {
@@ -272,12 +291,16 @@ class Closer {
         border-radius: 50%;
       }
   
-      #intimateToggle:checked + .toggle-slider {
-        background-color: #FF69B4;
+      #intimacyToggle:checked + .toggle-slider {
+        background-color: #e89a41;
       }
   
-      #truthToggle:checked + .toggle-slider {
-        background-color: #e46f16;
+      #tabuToggle:checked + .toggle-slider {
+        background-color: #383838;
+      }
+
+      #obligationsToggle:checked + .toggle-slider {
+        background-color: #6c5ae4;
       }
   
       .toggle input:checked + .toggle-slider:before {
@@ -309,23 +332,32 @@ class Closer {
       );
     }
 
-    // Aggiungi la proprietà truthMode alla classe
-    this.truthMode = false;
+    // Aggiungi la proprietà tabuMode alla classe
+    this.tabuMode = false;
 
-    const intimateToggle = document.getElementById("intimateToggle");
-    const truthToggle = document.getElementById("truthToggle");
+    const intimacyToggle = document.getElementById("intimacyToggle");
+    const tabuToggle = document.getElementById("tabuToggle");
+    const obligationsToggle = document.getElementById("obligationsToggle");
 
-    if (intimateToggle) {
-      intimateToggle.addEventListener("change", (e) => {
-        this.intimateMode = e.target.checked;
+    if (intimacyToggle) {
+      intimacyToggle.addEventListener("change", (e) => {
+        this.intimacyMode = e.target.checked;
         this.initializeFullDeck();
         this.shuffleDeck();
       });
     }
 
-    if (truthToggle) {
-      truthToggle.addEventListener("change", (e) => {
-        this.truthMode = e.target.checked;
+    if (tabuToggle) {
+      tabuToggle.addEventListener("change", (e) => {
+        this.tabuMode = e.target.checked;
+        this.initializeFullDeck();
+        this.shuffleDeck();
+      });
+    }
+
+    if (obligationsToggle) {
+      obligationsToggle.addEventListener("change", (e) => {
+        this.obligationsMode = e.target.checked;
         this.initializeFullDeck();
         this.shuffleDeck();
       });
@@ -334,7 +366,7 @@ class Closer {
 
   addInstructions() {
     const instructionsElement = document.createElement("div");
-    instructionsElement.id = "feedback-instructions";
+    instructionsElement.id = "tabu-instructions";
     instructionsElement.style.cssText = `
       position: fixed;
       bottom: 0;
@@ -373,7 +405,7 @@ class Closer {
     `;
 
     const title = document.createElement("span");
-    title.textContent = "Suggerimenti per Verità Scomode";
+    title.textContent = "Suggerimenti per Tabù";
     title.style.cssText = `
       margin-left: 8px;
       font-weight: 600;
@@ -525,10 +557,8 @@ class Closer {
     document.body.appendChild(instructionsElement);
   }
 
-  hideFeedbackInstructions() {
-    const instructionsElement = document.getElementById(
-      "feedback-instructions"
-    );
+  hideTabuInstructions() {
+    const instructionsElement = document.getElementById("tabu-instructions");
     if (instructionsElement) {
       instructionsElement.style.transform = "translateY(calc(100% - 45px))";
       const arrow = instructionsElement.querySelector(
@@ -543,8 +573,9 @@ class Closer {
   initializeFullDeck() {
     this.fullDeck = db.categories
       .filter((category) => {
-        if (!this.intimateMode && category.isIntimate) return false;
-        if (!this.truthMode && category.isFeedback) return false;
+        if (!this.intimacyMode && category.isIntimacy) return false;
+        if (!this.tabuMode && category.isTabu) return false;
+        if (!this.obligationsMode && category.isObligation) return false;
         return true;
       })
       .flatMap((category) =>
@@ -554,8 +585,9 @@ class Closer {
           icon: category.icon,
           color: category.color,
           instructions: category.instructions,
-          isFeedback: category.isFeedback,
-          isIntimate: category.isIntimate,
+          isTabu: category.isTabu,
+          isIntimacy: category.isIntimacy,
+          isObligation: category.isObligation,
         }))
       );
   }
@@ -726,9 +758,9 @@ class Closer {
       this.categoryElement.style.color = this.currentCard.color;
       this.questionElement.textContent = this.currentCard.question;
 
-      // Verifica isFeedback invece del nome della categoria
-      if (this.currentCard.isFeedback) {
-        this.showFeedbackInstructions();
+      // Verifica isTabu invece del nome della categoria
+      if (this.currentCard.isTabu) {
+        this.showTabuInstructions();
       }
 
       // Rimuoviamo la carta dal mazzo dopo averla usata
@@ -746,15 +778,13 @@ class Closer {
       this.cardElement.classList.remove("flipped");
       this.isFlipped = false;
 
-      this.hideFeedbackInstructions();
+      this.hideTabuInstructions();
       this.switchPlayer();
     }
   }
 
-  showFeedbackInstructions() {
-    const instructionsElement = document.getElementById(
-      "feedback-instructions"
-    );
+  showTabuInstructions() {
+    const instructionsElement = document.getElementById("tabu-instructions");
     if (instructionsElement) {
       instructionsElement.style.transform = "translateY(0)";
       const arrow = instructionsElement.querySelector(
