@@ -11,10 +11,10 @@ class LinkGame {
     this.intimateMode = false;
     this.feedbackCardCounter = 0;
     this.initializeSounds();
-    this.initializeSounds();
     this.initializeElements();
     this.addIntimateToggle();
     this.initializeFullDeck();
+    this.addInstructions();
     this.getPlayerNames();
   }
 
@@ -148,13 +148,7 @@ class LinkGame {
     console.log("-------------------------");
   }
 
-  showFeedbackInstructions() {
-    const instructions = db.categories.find(
-      (c) => c.id === "feedback"
-    ).instructions;
-
-    this.hideFeedbackInstructions();
-
+  addInstructions() {
     const instructionsElement = document.createElement("div");
     instructionsElement.id = "feedback-instructions";
 
@@ -203,7 +197,6 @@ class LinkGame {
       line-height: 1.2;
     `;
 
-    // Contenitore esterno per il contenuto
     const contentWrapper = document.createElement("div");
     contentWrapper.style.cssText = `
       display: flex;
@@ -213,104 +206,142 @@ class LinkGame {
       max-height: 0;
       overflow: hidden;
       transition: all 0.5s ease-out;
-      white-space: pre-line;
     `;
 
-    // Contenitore interno per limitare la larghezza del testo
     const contentInner = document.createElement("div");
     contentInner.style.cssText = `
       max-width: 420px;
       width: 100%;
-      padding: 0px 20px 20px 20px;
-      font-size: 12px;
-      line-height: 1.5;
-    `;
-    contentInner.textContent = instructions;
-
-    let isExpanded = false;
-    const toggleExpansion = () => {
-      isExpanded = !isExpanded;
-      if (isExpanded) {
-        // Calcoliamo l'altezza necessaria per il contenuto
-        contentWrapper.style.maxHeight = "none";
-        contentWrapper.style.opacity = "1";
-        const headerHeight = header.offsetHeight;
-        const contentHeight = contentInner.offsetHeight + 40; // 40px per il padding
-        const maxAvailableHeight = window.innerHeight * 0.7; // 70% dell'altezza della viewport
-        const finalHeight = Math.min(contentHeight, maxAvailableHeight);
-
-        contentWrapper.style.maxHeight = `${finalHeight}px`;
-        contentWrapper.style.overflow =
-          contentHeight > maxAvailableHeight ? "auto" : "hidden";
-
-        instructionsElement.style.transform = "translateY(0)";
-        arrow.style.transform = "rotate(0deg)";
-        closeButton.style.opacity = "1";
-      } else {
-        instructionsElement.style.transform = "translateY(calc(100% - 45px))";
-        arrow.style.transform = "rotate(180deg)";
-        contentWrapper.style.opacity = "0";
-        contentWrapper.style.maxHeight = "0";
-        closeButton.style.opacity = "0";
-      }
-    };
-
-    header.addEventListener("click", toggleExpansion);
-
-    const closeButton = document.createElement("button");
-    closeButton.innerHTML = "✕";
-    closeButton.style.cssText = `
-      position: absolute;
-      top: 8px;
-      right: 8px;
-      background: none;
-      border: none;
-      color: white;
-      font-size: 1.2rem;
-      cursor: pointer;
-      padding: 5px;
-      width: 30px;
-      height: 30px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      opacity: 0;
-      transition: opacity 0.3s ease, background-color 0.3s ease;
+      padding: 20px;
     `;
 
-    closeButton.addEventListener("mouseover", () => {
-      closeButton.style.backgroundColor = "rgba(255, 255, 255, 0.2)";
-    });
+    contentInner.innerHTML = `
+      <div class="instructions-content">
+        <div class="instructions-header">
+          <span class="instructions-icon">💡</span>
+          Prima di rispondere ricorda:
+        </div>
+        <ul class="instructions-list">
+          <li>Queste domande sono pensate per essere scomode</li>
+          <li>L'obiettivo è crescere insieme, non ferirsi</li>
+          <li>Se una domanda è troppo difficile, potete saltarla</li>
+          <li>Cercate di mantenere un dialogo costruttivo</li>
+          <li>È ok prendersi una pausa se le emozioni sono troppo intense</li>
+          <li>Concludete sempre con qualcosa che amate dell'altro</li>
+        </ul>
+      </div>
+    `;
 
-    closeButton.addEventListener("mouseout", () => {
-      closeButton.style.backgroundColor = "transparent";
-    });
-
-    closeButton.addEventListener("click", () => {
-      this.hideFeedbackInstructions();
-    });
-
-    // Stili per il mobile
+    // Aggiungiamo gli stili
     const style = document.createElement("style");
     style.textContent = `
+      .instructions-content {
+        font-size: 0.95rem;
+        line-height: 1.5;
+      }
+
+      .instructions-header {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 12px;
+        font-weight: 600;
+      }
+
+      .instructions-icon {
+        font-size: 1.2rem;
+      }
+
+      .instructions-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        width: 550px !important;
+      }
+
+      .instructions-list li {
+        font-size: 12px;
+        padding-left: 16px;
+        position: relative;
+        margin-bottom: 8px;
+        line-height: 12px !important;
+      }
+
+      .instructions-list li:before {
+        content: "•";
+        position: absolute;
+        left: 0;
+        color: rgba(255, 255, 255, 0.8);
+      }
+
+      .instructions-list li:last-child {
+        margin-bottom: 0;
+      }
+
       @media (max-width: 480px) {
-        #feedback-instructions {
+        .instructions-content {
           font-size: 0.9rem;
         }
         
-        #feedback-instructions .content-inner {
-          padding: 15px;
+        .instructions-list li {
+          margin-bottom: 6px;
         }
       }
     `;
     document.head.appendChild(style);
 
+    let isExpanded = false;
+    const toggleExpansion = (event) => {
+      if (
+        !isExpanded ||
+        event.target === header ||
+        event.target === arrow ||
+        event.target === title
+      ) {
+        isExpanded = !isExpanded;
+        if (isExpanded) {
+          contentWrapper.style.maxHeight = "none";
+          contentWrapper.style.opacity = "1";
+          const headerHeight = header.offsetHeight;
+          const contentHeight = contentInner.offsetHeight + 40;
+          const maxAvailableHeight = window.innerHeight * 0.7;
+          const finalHeight = Math.min(contentHeight, maxAvailableHeight);
+
+          contentWrapper.style.maxHeight = `${finalHeight}px`;
+          contentWrapper.style.overflow =
+            contentHeight > maxAvailableHeight ? "auto" : "hidden";
+
+          instructionsElement.style.transform = "translateY(0)";
+          arrow.style.transform = "rotate(0deg)";
+        } else {
+          instructionsElement.style.transform = "translateY(calc(100% - 45px))";
+          arrow.style.transform = "rotate(180deg)";
+          contentWrapper.style.opacity = "0";
+          contentWrapper.style.maxHeight = "0";
+        }
+      }
+    };
+
+    // Assembla gli elementi
     header.appendChild(arrow);
     header.appendChild(title);
     contentWrapper.appendChild(contentInner);
     instructionsElement.appendChild(header);
     instructionsElement.appendChild(contentWrapper);
-    instructionsElement.appendChild(closeButton);
+
+    // Aggiungi i listener
+    header.addEventListener("click", toggleExpansion);
+    instructionsElement.addEventListener("click", (event) => {
+      if (event.target === instructionsElement && isExpanded) {
+        toggleExpansion(event);
+      }
+    });
+
+    // Previeni la propagazione dei click dal contenuto
+    contentWrapper.addEventListener("click", (event) => {
+      event.stopPropagation();
+    });
+
     document.body.appendChild(instructionsElement);
   }
 
@@ -319,39 +350,13 @@ class LinkGame {
       "feedback-instructions"
     );
     if (instructionsElement) {
-      instructionsElement.style.transform = "translateY(100%)";
-      setTimeout(() => instructionsElement.remove(), 300);
-    }
-  }
-
-  hideFeedbackInstructions() {
-    const instructionsElement = document.getElementById(
-      "feedback-instructions"
-    );
-    if (instructionsElement) {
-      instructionsElement.style.transform = "translateY(100%)";
-      setTimeout(() => instructionsElement.remove(), 300);
-    }
-  }
-
-  hideFeedbackInstructions() {
-    const instructionsElement = document.getElementById(
-      "feedback-instructions"
-    );
-    if (instructionsElement) {
-      instructionsElement.style.transform = "translateX(-50%) translateY(100%)";
-      setTimeout(() => instructionsElement.remove(), 300);
-    }
-  }
-
-  hideFeedbackInstructions() {
-    const instructionsElement = document.getElementById(
-      "feedback-instructions"
-    );
-    if (instructionsElement) {
-      instructionsElement.style.opacity = "0";
-      instructionsElement.style.transform = "translate(-50%, 20px)";
-      setTimeout(() => instructionsElement.remove(), 300);
+      instructionsElement.style.transform = "translateY(calc(100% - 45px))";
+      const arrow = instructionsElement.querySelector(
+        "div:first-child > div:first-child"
+      );
+      if (arrow) {
+        arrow.style.transform = "rotate(180deg)";
+      }
     }
   }
 
@@ -521,19 +526,17 @@ class LinkGame {
     if (this.currentDeck.length === 0) {
       this.currentDeck = [...this.fullDeck];
       this.shuffleDeck(false);
+      this.showNotification("Nuovo mazzo creato! 🎴");
       return;
     }
 
     if (!this.isFlipped) {
       this.playSound("flip");
 
-      // Rimuoviamo la carta dal mazzo quando viene scoperta
-      this.currentDeck.pop();
-      this.updateCardsRemaining();
+      // Otteniamo la carta corrente prima di rimuoverla
+      this.currentCard = this.currentDeck[this.currentDeck.length - 1];
 
-      // Prepariamo la prossima carta
-      const nextCard = this.currentDeck[this.currentDeck.length - 1];
-
+      // Ora possiamo usare this.currentCard in sicurezza
       this.categoryElement.textContent = this.currentCard.category;
       this.categoryElement.style.color = this.currentCard.color;
       this.questionElement.textContent = this.currentCard.question;
@@ -542,11 +545,16 @@ class LinkGame {
         this.showFeedbackInstructions();
       }
 
+      // Rimuoviamo la carta dal mazzo dopo averla usata
+      this.currentDeck.pop();
+      this.updateCardsRemaining();
+
       this.cardElement.classList.add("flipped");
       this.isFlipped = true;
     } else {
       this.playSound("flip");
 
+      // Prendiamo la prossima carta che sarà mostrata quando si rigira
       this.currentCard = this.currentDeck[this.currentDeck.length - 1];
       this.updateCardDisplay();
       this.cardElement.classList.remove("flipped");
@@ -554,6 +562,21 @@ class LinkGame {
 
       this.hideFeedbackInstructions();
       this.switchPlayer();
+    }
+  }
+
+  showFeedbackInstructions() {
+    const instructionsElement = document.getElementById(
+      "feedback-instructions"
+    );
+    if (instructionsElement) {
+      instructionsElement.style.transform = "translateY(0)";
+      const arrow = instructionsElement.querySelector(
+        "div:first-child > div:first-child"
+      );
+      if (arrow) {
+        arrow.style.transform = "rotate(0deg)";
+      }
     }
   }
 
