@@ -155,8 +155,8 @@ class LinkGame {
           <li>Scegliete un momento tranquillo senza distrazioni</li>
           <li>Ascoltate con attenzione e senza giudicare</li>
           <li>Siate onesti nelle vostre risposte</li>
-          <li>Non abbiate fretta, godetevi il momento di condivisione</li>
-          <li>La modalità intima può essere attivata quando vi sentite pronti</li>
+          <li>La modalità verità scomode può essere attivata quando vi sentite pronti</li>
+          <li>Attiva la modalità intima per domande sull'intimità sessuale</li>
         </ul>
       </div>
     </div>
@@ -197,7 +197,7 @@ class LinkGame {
 
   addIntimateToggle() {
     const toggleContainer = document.createElement("div");
-    toggleContainer.classList.add("intimate-mode-toggle");
+    toggleContainer.classList.add("toggles-container");
     toggleContainer.innerHTML = `
       <div class="toggle-wrapper">
         <label class="toggle">
@@ -206,16 +206,25 @@ class LinkGame {
         </label>
         <span class="toggle-label">Modalità Intima</span>
       </div>
+      <div class="toggle-wrapper">
+        <label class="toggle">
+          <input type="checkbox" id="truthToggle">
+          <span class="toggle-slider"></span>
+        </label>
+        <span class="toggle-label">Verità Scomode</span>
+      </div>
     `;
 
     const style = document.createElement("style");
     style.textContent = `
-      .intimate-mode-toggle {
+      .toggles-container {
         margin-top: 1rem;
         display: flex;
         justify-content: center;
+        gap: 1rem;
+        flex-wrap: wrap;
       }
-
+  
       .toggle-wrapper {
         display: flex;
         align-items: center;
@@ -225,20 +234,20 @@ class LinkGame {
         border-radius: 20px;
         box-shadow: 0 2px 10px rgba(0,0,0,0.1);
       }
-
+  
       .toggle {
         position: relative;
         display: inline-block;
         width: 50px;
         height: 24px;
       }
-
+  
       .toggle input {
         opacity: 0;
         width: 0;
         height: 0;
       }
-
+  
       .toggle-slider {
         position: absolute;
         cursor: pointer;
@@ -250,7 +259,7 @@ class LinkGame {
         transition: .4s;
         border-radius: 24px;
       }
-
+  
       .toggle-slider:before {
         position: absolute;
         content: "";
@@ -262,25 +271,29 @@ class LinkGame {
         transition: .4s;
         border-radius: 50%;
       }
-
-      .toggle input:checked + .toggle-slider {
+  
+      #intimateToggle:checked + .toggle-slider {
         background-color: #FF69B4;
       }
-
+  
+      #truthToggle:checked + .toggle-slider {
+        background-color: #e46f16;
+      }
+  
       .toggle input:checked + .toggle-slider:before {
         transform: translateX(26px);
       }
-
+  
       .toggle-label {
         font-size: 0.9rem;
         color: #666;
         user-select: none;
       }
-
+  
       [data-theme="dark"] .toggle-wrapper {
         background: #2d3436;
       }
-
+  
       [data-theme="dark"] .toggle-label {
         color: #fff;
       }
@@ -296,10 +309,23 @@ class LinkGame {
       );
     }
 
-    const toggleCheckbox = document.getElementById("intimateToggle");
-    if (toggleCheckbox) {
-      toggleCheckbox.addEventListener("change", (e) => {
+    // Aggiungi la proprietà truthMode alla classe
+    this.truthMode = false;
+
+    const intimateToggle = document.getElementById("intimateToggle");
+    const truthToggle = document.getElementById("truthToggle");
+
+    if (intimateToggle) {
+      intimateToggle.addEventListener("change", (e) => {
         this.intimateMode = e.target.checked;
+        this.initializeFullDeck();
+        this.shuffleDeck();
+      });
+    }
+
+    if (truthToggle) {
+      truthToggle.addEventListener("change", (e) => {
+        this.truthMode = e.target.checked;
         this.initializeFullDeck();
         this.shuffleDeck();
       });
@@ -516,7 +542,12 @@ class LinkGame {
 
   initializeFullDeck() {
     this.fullDeck = db.categories
-      .filter((category) => !category.isIntimate || this.intimateMode)
+      .filter((category) => {
+        if (!this.intimateMode && category.isIntimate) return false;
+        if (!this.truthMode && category.isFeedback) return false;
+
+        return true;
+      })
       .flatMap((category) =>
         category.questions.map((question) => ({
           category: category.category,

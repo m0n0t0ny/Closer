@@ -177,6 +177,7 @@ const db = {
       category: "Verità Scomode",
       icon: "🔥",
       color: "#e46f16",
+      isFeedback: true,
       questions: [
         "Quale parte del mio aspetto fisico cambieresti se potessi?",
         "Quale mia abitudine ti fa venire voglia di urlarmi contro?",
