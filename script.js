@@ -1,6 +1,6 @@
 import db from "./db.js";
 
-class LinkGame {
+class Closer {
   constructor() {
     this.fullDeck = [];
     this.currentDeck = [];
@@ -820,7 +820,7 @@ class LinkGame {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-  const game = new LinkGame();
+  const game = new Closer();
 });
 
-export default LinkGame;
+export default Closer;
