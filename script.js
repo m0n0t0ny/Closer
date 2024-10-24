@@ -9,7 +9,6 @@ class LinkGame {
     this.players = null;
     this.currentPlayerIndex = 0;
     this.intimateMode = false;
-    this.feedbackCardCounter = 0;
     this.initializeSounds();
     this.initializeElements();
     this.addIntimateToggle();
@@ -19,8 +18,6 @@ class LinkGame {
   }
 
   initializeElements() {
-    document.querySelector(".subtitle").textContent = db.subtitle;
-
     this.cardElement = document.querySelector(".card");
     this.categoryElement = document.querySelector(".category");
     this.questionElement = document.querySelector(".question");
@@ -139,19 +136,9 @@ class LinkGame {
     }
   }
 
-  debugDeck() {
-    console.log("--- Stato attuale del mazzo ---");
-    console.log("Modalità intima:", this.intimateMode);
-    console.log("Numero totale carte:", this.currentDeck.length);
-    const categories = new Set(this.currentDeck.map((card) => card.category));
-    console.log("Categorie presenti:", Array.from(categories));
-    console.log("-------------------------");
-  }
-
   addInstructions() {
     const instructionsElement = document.createElement("div");
     instructionsElement.id = "feedback-instructions";
-
     instructionsElement.style.cssText = `
       position: fixed;
       bottom: 0;
@@ -232,7 +219,6 @@ class LinkGame {
       </div>
     `;
 
-    // Aggiungiamo gli stili
     const style = document.createElement("style");
     style.textContent = `
       .instructions-content {
@@ -256,7 +242,6 @@ class LinkGame {
         list-style: none;
         padding: 0;
         margin: 0;
-        width: 550px !important;
       }
 
       .instructions-list li {
@@ -292,7 +277,6 @@ class LinkGame {
 
     let isExpanded = false;
 
-    // Funzione per aprire il pannello
     const openInstructions = () => {
       isExpanded = true;
       contentWrapper.style.maxHeight = "none";
@@ -309,7 +293,6 @@ class LinkGame {
       arrow.style.transform = "rotate(0deg)";
     };
 
-    // Funzione per chiudere il pannello
     const closeInstructions = () => {
       isExpanded = false;
       instructionsElement.style.transform = "translateY(calc(100% - 45px))";
@@ -318,14 +301,12 @@ class LinkGame {
       contentWrapper.style.maxHeight = "0";
     };
 
-    // Click sul background (intero elemento instructions)
     instructionsElement.addEventListener("click", (event) => {
       if (event.target === instructionsElement && isExpanded) {
         closeInstructions();
       }
     });
 
-    // Click sull'header
     header.addEventListener("click", (event) => {
       event.stopPropagation();
       if (isExpanded) {
@@ -335,22 +316,15 @@ class LinkGame {
       }
     });
 
-    // Click sul content (previene la chiusura)
     contentWrapper.addEventListener("click", (event) => {
       event.stopPropagation();
     });
 
-    // Assembla gli elementi
     header.appendChild(arrow);
     header.appendChild(title);
     contentWrapper.appendChild(contentInner);
     instructionsElement.appendChild(header);
     instructionsElement.appendChild(contentWrapper);
-
-    // Previeni la propagazione dei click dal contenuto
-    contentWrapper.addEventListener("click", (event) => {
-      event.stopPropagation();
-    });
 
     document.body.appendChild(instructionsElement);
   }
@@ -465,7 +439,6 @@ class LinkGame {
       </div>
     `;
 
-    // Aggiungiamo gli stili per il placeholder
     const style = document.createElement("style");
     style.textContent = `
       .players-form input::placeholder {
@@ -536,17 +509,13 @@ class LinkGame {
     if (this.currentDeck.length === 0) {
       this.currentDeck = [...this.fullDeck];
       this.shuffleDeck(false);
-      this.showNotification("Nuovo mazzo creato! 🎴");
       return;
     }
 
     if (!this.isFlipped) {
       this.playSound("flip");
-
-      // Otteniamo la carta corrente prima di rimuoverla
       this.currentCard = this.currentDeck[this.currentDeck.length - 1];
 
-      // Ora possiamo usare this.currentCard in sicurezza
       this.categoryElement.textContent = this.currentCard.category;
       this.categoryElement.style.color = this.currentCard.color;
       this.questionElement.textContent = this.currentCard.question;
@@ -555,7 +524,6 @@ class LinkGame {
         this.showFeedbackInstructions();
       }
 
-      // Rimuoviamo la carta dal mazzo dopo averla usata
       this.currentDeck.pop();
       this.updateCardsRemaining();
 
@@ -563,13 +531,10 @@ class LinkGame {
       this.isFlipped = true;
     } else {
       this.playSound("flip");
-
-      // Prendiamo la prossima carta che sarà mostrata quando si rigira
       this.currentCard = this.currentDeck[this.currentDeck.length - 1];
       this.updateCardDisplay();
       this.cardElement.classList.remove("flipped");
       this.isFlipped = false;
-
       this.hideFeedbackInstructions();
       this.switchPlayer();
     }
@@ -588,35 +553,6 @@ class LinkGame {
         arrow.style.transform = "rotate(0deg)";
       }
     }
-  }
-
-  shuffleDeck(playSound = true) {
-    this.currentDeck = [...this.fullDeck];
-
-    if (playSound) {
-      this.playSound("click");
-    }
-
-    for (let i = this.currentDeck.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [this.currentDeck[i], this.currentDeck[j]] = [
-        this.currentDeck[j],
-        this.currentDeck[i],
-      ];
-    }
-
-    this.cardElement.classList.remove("flipped");
-    this.isFlipped = false;
-    this.currentCard = this.currentDeck[this.currentDeck.length - 1];
-    this.updateCardDisplay();
-    this.updateCardsRemaining();
-
-    this.categoryElement.style.transition = "none";
-    this.categoryElement.style.color = "";
-    this.categoryElement.textContent = "";
-    this.questionElement.textContent = "";
-
-    void this.categoryElement.offsetWidth;
   }
 
   shuffleDeck(playSound = true) {
@@ -668,18 +604,12 @@ class LinkGame {
   }
 
   addEventListeners() {
-    this.cardElement.addEventListener("click", () => {
-      this.drawCard();
-    });
+    this.cardElement.addEventListener("click", () => this.drawCard());
   }
 }
 
 document.addEventListener("DOMContentLoaded", () => {
   const game = new LinkGame();
-
-  setTimeout(() => {
-    game.debugDeck();
-  }, 1000);
 });
 
 export default LinkGame;
