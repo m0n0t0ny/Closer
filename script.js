@@ -18,6 +18,168 @@ class Closer {
     this.addInstructions();
     this.getPlayerNames();
     this.addGameGuide();
+    this.addShareButton();
+  }
+
+  addShareButton() {
+    const shareButton = document.createElement("button");
+    shareButton.innerHTML = "📤 Condividi";
+    shareButton.style.cssText = `
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: #6c5ae4;
+      color: white;
+      border: none;
+      border-radius: 12px;
+      padding: 12px 24px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      display: none;
+      z-index: 1000;
+    `;
+    document.body.appendChild(shareButton);
+    this.shareButton = shareButton;
+
+    shareButton.addEventListener("click", () => this.showSharePopup());
+  }
+
+  showSharePopup() {
+    const popup = document.createElement("div");
+    popup.style.cssText = `
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.8);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1001;
+    `;
+
+    const content = document.createElement("div");
+    content.style.cssText = `
+      background: white;
+      padding: 2rem;
+      border-radius: 20px;
+      width: 90%;
+      max-width: 400px;
+      text-align: center;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+    `;
+
+    const title = document.createElement("h3");
+    title.textContent = "Condividi Obbligo";
+    title.style.cssText = `
+      color: #1a1c1e;
+      font-size: 1.5rem;
+      margin-bottom: 1.5rem;
+    `;
+
+    const datePicker = document.createElement("input");
+    datePicker.type = "date";
+    datePicker.style.cssText = `
+      width: 100%;
+      padding: 12px;
+      border: 2px solid #6c5ae4;
+      border-radius: 12px;
+      font-size: 1rem;
+      margin-bottom: 1.5rem;
+      color: #1a1c1e;
+    `;
+
+    // Imposta la data di default a domani
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    datePicker.value = tomorrow.toISOString().split("T")[0];
+
+    const shareOptions = document.createElement("div");
+    shareOptions.style.cssText = `
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      margin-top: 1rem;
+    `;
+
+    const createShareButton = (text, icon, action) => {
+      const button = document.createElement("button");
+      button.innerHTML = `${icon}<br>${text}`;
+      button.style.cssText = `
+        background: #6c5ae4;
+        color: white;
+        border: none;
+        border-radius: 12px;
+        padding: 15px;
+        font-size: 0.9rem;
+        cursor: pointer;
+        flex: 1;
+        max-width: 100px;
+        transition: all 0.3s ease;
+      `;
+      button.addEventListener("click", () => {
+        const selectedDate = new Date(datePicker.value);
+        const formattedDate = selectedDate.toLocaleDateString("it-IT");
+        const currentPlayer = this.players[this.currentPlayerIndex];
+        const otherPlayer = this.players[this.currentPlayerIndex + 1];
+        const text = `${otherPlayer.name} si impegna a:\n${this.currentCard.question}\nEntro il: ${formattedDate}`;
+
+        switch (action) {
+          case "whatsapp":
+            window.open(`https://wa.me/?text=${encodeURIComponent(text)}`);
+            break;
+          case "email":
+            window.open(
+              `mailto:?subject=Closer%20-%20Nuovo%20Obbligo&body=${encodeURIComponent(
+                text
+              )}`
+            );
+            break;
+          case "pdf":
+            this.generatePDF(text);
+            break;
+        }
+        popup.remove();
+      });
+      return button;
+    };
+
+    const whatsappBtn = createShareButton("WhatsApp", "💬", "whatsapp");
+    const emailBtn = createShareButton("Email", "📧", "email");
+    const pdfBtn = createShareButton("PDF", "📄", "pdf");
+
+    shareOptions.appendChild(whatsappBtn);
+    shareOptions.appendChild(emailBtn);
+    shareOptions.appendChild(pdfBtn);
+
+    content.appendChild(title);
+    content.appendChild(datePicker);
+    content.appendChild(shareOptions);
+    popup.appendChild(content);
+    document.body.appendChild(popup);
+
+    // Chiudi popup cliccando fuori
+    popup.addEventListener("click", (e) => {
+      if (e.target === popup) popup.remove();
+    });
+  }
+
+  generatePDF(text) {
+    // Qui puoi implementare la generazione del PDF
+    // Per ora creiamo un file di testo scaricabile
+    const element = document.createElement("a");
+    element.setAttribute(
+      "href",
+      "data:text/plain;charset=utf-8," + encodeURIComponent(text)
+    );
+    element.setAttribute("download", "obbligo.txt");
+    element.style.display = "none";
+    document.body.appendChild(element);
+    element.click();
+    document.body.removeChild(element);
   }
 
   initializeElements() {
@@ -758,7 +920,13 @@ class Closer {
       this.categoryElement.style.color = this.currentCard.color;
       this.questionElement.textContent = this.currentCard.question;
 
-      // Verifica isTabu invece del nome della categoria
+      // Mostra/nascondi il pulsante di condivisione in base al tipo di carta
+      if (this.currentCard.isObligation) {
+        this.shareButton.style.display = "block";
+      } else {
+        this.shareButton.style.display = "none";
+      }
+
       if (this.currentCard.isTabu) {
         this.showTabuInstructions();
       }
@@ -771,6 +939,9 @@ class Closer {
       this.isFlipped = true;
     } else {
       this.playSound("flip");
+
+      // Nascondi sempre il pulsante di condivisione quando la carta viene rigirata
+      this.shareButton.style.display = "none";
 
       // Prendiamo la prossima carta che sarà mostrata quando si rigira
       this.currentCard = this.currentDeck[this.currentDeck.length - 1];
