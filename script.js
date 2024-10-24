@@ -158,7 +158,7 @@ class LinkGame {
       left: 0;
       right: 0;
       width: 100%;
-      background: #e46f16;
+      background: rgba(255, 71, 87, 1);
       color: white;
       box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
       z-index: 1000;
@@ -175,7 +175,7 @@ class LinkGame {
       justify-content: center;
       cursor: pointer;
       border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-      background: #e46f16;
+      background: rgba(255, 71, 87, 1);
       flex-wrap: wrap;
       gap: 4px;
     `;
