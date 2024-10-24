@@ -1,7 +1,7 @@
 // db.js
 const db = {
   title: "Closer",
-  subtitle: "Più vicini ad ogni carta",
+  subtitle: "Ad ogni carta più vicini",
   categories: [
     {
       id: "emotions",
