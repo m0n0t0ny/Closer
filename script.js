@@ -44,20 +44,19 @@ class LinkGame {
     const style = document.createElement("style");
     style.textContent = `
       .intimate-mode-toggle {
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        z-index: 1000;
-        background: white;
-        padding: 10px 15px;
-        border-radius: 20px;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        margin-top: 1rem;
+        display: flex;
+        justify-content: center;
       }
 
       .toggle-wrapper {
         display: flex;
         align-items: center;
         gap: 10px;
+        padding: 8px 16px;
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
       }
 
       .toggle {
@@ -108,12 +107,27 @@ class LinkGame {
       .toggle-label {
         font-size: 0.9rem;
         color: #666;
-        user-select: none;W
+        user-select: none;
+      }
+
+      [data-theme="dark"] .toggle-wrapper {
+        background: #2d3436;
+      }
+
+      [data-theme="dark"] .toggle-label {
+        color: #fff;
       }
     `;
 
     document.head.appendChild(style);
-    document.body.appendChild(toggleContainer);
+
+    const cardsRemainingElement = document.querySelector(".cards-remaining");
+    if (cardsRemainingElement) {
+      cardsRemainingElement.parentNode.insertBefore(
+        toggleContainer,
+        cardsRemainingElement.nextSibling
+      );
+    }
 
     const toggleCheckbox = document.getElementById("intimateToggle");
     if (toggleCheckbox) {
@@ -121,12 +135,6 @@ class LinkGame {
         this.intimateMode = e.target.checked;
         this.initializeFullDeck();
         this.shuffleDeck();
-
-        const message = this.intimateMode
-          ? "Modalità intima ON 💝"
-          : "Modalità intima OFF";
-
-        this.showNotification(message);
       });
     }
   }
@@ -138,39 +146,6 @@ class LinkGame {
     const categories = new Set(this.currentDeck.map((card) => card.category));
     console.log("Categorie presenti:", Array.from(categories));
     console.log("-------------------------");
-  }
-
-  showNotification(message) {
-    const notification = document.createElement("div");
-    notification.classList.add("game-notification");
-    notification.textContent = message;
-
-    const style = document.createElement("style");
-    style.textContent = `
-      .game-notification {
-        position: fixed;
-        bottom: 20px;
-        left: 50%;
-        transform: translateX(-50%);
-        background: rgba(108, 92, 231, 1);
-        color: white;
-        padding: 10px 20px;
-        border-radius: 20px;
-        font-size: 0.9rem;
-        z-index: 1000;
-        animation: fadeInOut 2s forwards;
-      }
-
-      @keyframes fadeInOut {
-        0% { opacity: 0; transform: translate(-50%, 20px); }
-        15% { opacity: 1; transform: translate(-50%, 0); }
-        85% { opacity: 1; transform: translate(-50%, 0); }
-        100% { opacity: 0; transform: translate(-50%, -20px); }
-      }
-    `;
-
-    document.head.appendChild(style);
-    document.body.appendChild(notification);
   }
 
   showFeedbackInstructions() {
@@ -546,7 +521,6 @@ class LinkGame {
     if (this.currentDeck.length === 0) {
       this.currentDeck = [...this.fullDeck];
       this.shuffleDeck(false);
-      this.showNotification("Nuovo mazzo creato! 🎴");
       return;
     }
 
