@@ -545,7 +545,6 @@ class LinkGame {
       .filter((category) => {
         if (!this.intimateMode && category.isIntimate) return false;
         if (!this.truthMode && category.isFeedback) return false;
-
         return true;
       })
       .flatMap((category) =>
@@ -555,6 +554,8 @@ class LinkGame {
           icon: category.icon,
           color: category.color,
           instructions: category.instructions,
+          isFeedback: category.isFeedback,
+          isIntimate: category.isIntimate,
         }))
       );
   }
@@ -710,21 +711,27 @@ class LinkGame {
     if (this.currentDeck.length === 0) {
       this.currentDeck = [...this.fullDeck];
       this.shuffleDeck(false);
+      this.showNotification("Nuovo mazzo creato! 🎴");
       return;
     }
 
     if (!this.isFlipped) {
       this.playSound("flip");
+
+      // Otteniamo la carta corrente prima di rimuoverla
       this.currentCard = this.currentDeck[this.currentDeck.length - 1];
 
+      // Ora possiamo usare this.currentCard in sicurezza
       this.categoryElement.textContent = this.currentCard.category;
       this.categoryElement.style.color = this.currentCard.color;
       this.questionElement.textContent = this.currentCard.question;
 
-      if (this.currentCard.category === "Verità Scomode") {
+      // Verifica isFeedback invece del nome della categoria
+      if (this.currentCard.isFeedback) {
         this.showFeedbackInstructions();
       }
 
+      // Rimuoviamo la carta dal mazzo dopo averla usata
       this.currentDeck.pop();
       this.updateCardsRemaining();
 
@@ -732,10 +739,13 @@ class LinkGame {
       this.isFlipped = true;
     } else {
       this.playSound("flip");
+
+      // Prendiamo la prossima carta che sarà mostrata quando si rigira
       this.currentCard = this.currentDeck[this.currentDeck.length - 1];
       this.updateCardDisplay();
       this.cardElement.classList.remove("flipped");
       this.isFlipped = false;
+
       this.hideFeedbackInstructions();
       this.switchPlayer();
     }
