@@ -108,7 +108,7 @@ class LinkGame {
       .toggle-label {
         font-size: 0.9rem;
         color: #666;
-        user-select: none;
+        user-select: none;W
       }
     `;
 
@@ -123,8 +123,8 @@ class LinkGame {
         this.shuffleDeck();
 
         const message = this.intimateMode
-          ? "Modalità intima attivata 💝"
-          : "Modalità intima disattivata";
+          ? "Modalità intima ON 💝"
+          : "Modalità intima OFF";
 
         this.showNotification(message);
       });
@@ -174,43 +174,120 @@ class LinkGame {
   }
 
   showFeedbackInstructions() {
-    this.feedbackCardCounter++;
-
-    // Mostra le istruzioni solo ogni 5 carte
-    if (this.feedbackCardCounter % 5 !== 1) return;
-
     const instructions = db.categories.find(
       (c) => c.id === "feedback"
     ).instructions;
 
+    this.hideFeedbackInstructions();
+
     const instructionsElement = document.createElement("div");
     instructionsElement.id = "feedback-instructions";
+
     instructionsElement.style.cssText = `
       position: fixed;
-      bottom: 20px;
-      left: 50%;
-      transform: translateX(-50%);
+      bottom: 0;
+      left: 0;
+      right: 0;
+      width: 100%;
       background: rgba(255, 71, 87, 0.95);
       color: white;
-      padding: 15px 25px;
-      border-radius: 15px;
-      font-size: 0.9rem;
-      max-width: 90%;
-      width: min(400px, 90vw);
-      box-shadow: 0 4px 15px rgba(255, 71, 87, 0.2);
+      box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
       z-index: 1000;
-      animation: slideUp 0.3s ease-out;
-      white-space: pre-line;
-      padding-right: 40px; /* Spazio per il pulsante di chiusura */
+      transform: translateY(calc(100% - 45px));
+      transition: transform 0.3s ease-out;
     `;
 
-    // Aggiunta del pulsante di chiusura
+    const header = document.createElement("div");
+    header.style.cssText = `
+      min-height: 45px;
+      padding: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+      background: rgba(255, 71, 87, 1);
+      flex-wrap: wrap;
+      gap: 4px;
+    `;
+
+    const arrow = document.createElement("div");
+    arrow.innerHTML = "↕";
+    arrow.style.cssText = `
+      font-size: 1.2rem;
+      transform: rotate(180deg);
+      transition: transform 0.5s ease;
+      line-height: 1;
+    `;
+
+    const title = document.createElement("span");
+    title.textContent = "Suggerimenti per Verità Scomode";
+    title.style.cssText = `
+      margin-left: 8px;
+      font-weight: 600;
+      line-height: 1.2;
+    `;
+
+    // Contenitore esterno per il contenuto
+    const contentWrapper = document.createElement("div");
+    contentWrapper.style.cssText = `
+      display: flex;
+      justify-content: center;
+      width: 100%;
+      opacity: 0;
+      max-height: 0;
+      overflow: hidden;
+      transition: all 0.5s ease-out;
+      white-space: pre-line;
+    `;
+
+    // Contenitore interno per limitare la larghezza del testo
+    const contentInner = document.createElement("div");
+    contentInner.style.cssText = `
+      max-width: 420px;
+      width: 100%;
+      padding: 0px 20px 20px 20px;
+      font-size: 12px;
+      line-height: 1.5;
+    `;
+    contentInner.textContent = instructions;
+
+    let isExpanded = false;
+    const toggleExpansion = () => {
+      isExpanded = !isExpanded;
+      if (isExpanded) {
+        // Calcoliamo l'altezza necessaria per il contenuto
+        contentWrapper.style.maxHeight = "none";
+        contentWrapper.style.opacity = "1";
+        const headerHeight = header.offsetHeight;
+        const contentHeight = contentInner.offsetHeight + 40; // 40px per il padding
+        const maxAvailableHeight = window.innerHeight * 0.7; // 70% dell'altezza della viewport
+        const finalHeight = Math.min(contentHeight, maxAvailableHeight);
+
+        contentWrapper.style.maxHeight = `${finalHeight}px`;
+        contentWrapper.style.overflow =
+          contentHeight > maxAvailableHeight ? "auto" : "hidden";
+
+        instructionsElement.style.transform = "translateY(0)";
+        arrow.style.transform = "rotate(0deg)";
+        closeButton.style.opacity = "1";
+      } else {
+        instructionsElement.style.transform = "translateY(calc(100% - 45px))";
+        arrow.style.transform = "rotate(180deg)";
+        contentWrapper.style.opacity = "0";
+        contentWrapper.style.maxHeight = "0";
+        closeButton.style.opacity = "0";
+      }
+    };
+
+    header.addEventListener("click", toggleExpansion);
+
     const closeButton = document.createElement("button");
     closeButton.innerHTML = "✕";
     closeButton.style.cssText = `
       position: absolute;
-      top: 10px;
-      right: 10px;
+      top: 8px;
+      right: 8px;
       background: none;
       border: none;
       color: white;
@@ -222,11 +299,10 @@ class LinkGame {
       display: flex;
       align-items: center;
       justify-content: center;
-      border-radius: 50%;
-      transition: background-color 0.3s ease;
+      opacity: 0;
+      transition: opacity 0.3s ease, background-color 0.3s ease;
     `;
 
-    // Effetto hover per il pulsante
     closeButton.addEventListener("mouseover", () => {
       closeButton.style.backgroundColor = "rgba(255, 255, 255, 0.2)";
     });
@@ -235,42 +311,62 @@ class LinkGame {
       closeButton.style.backgroundColor = "transparent";
     });
 
-    // Event listener per la chiusura
     closeButton.addEventListener("click", () => {
       this.hideFeedbackInstructions();
     });
 
+    // Stili per il mobile
     const style = document.createElement("style");
     style.textContent = `
-      @keyframes slideUp {
-        from { transform: translate(-50%, 100%); opacity: 0; }
-        to { transform: translate(-50%, 0); opacity: 1; }
-      }
-
       @media (max-width: 480px) {
         #feedback-instructions {
-          font-size: 0.85rem;
-          padding: 12px 35px 12px 15px;
-          bottom: 10px;
+          font-size: 0.9rem;
+        }
+        
+        #feedback-instructions .content-inner {
+          padding: 15px;
         }
       }
     `;
-
     document.head.appendChild(style);
 
-    instructionsElement.textContent = instructions;
+    header.appendChild(arrow);
+    header.appendChild(title);
+    contentWrapper.appendChild(contentInner);
+    instructionsElement.appendChild(header);
+    instructionsElement.appendChild(contentWrapper);
     instructionsElement.appendChild(closeButton);
     document.body.appendChild(instructionsElement);
+  }
 
-    // Chiusura automatica dopo 10 secondi
-    setTimeout(() => {
-      const element = document.getElementById("feedback-instructions");
-      if (element) {
-        element.style.opacity = "0";
-        element.style.transform = "translate(-50%, 20px)";
-        setTimeout(() => this.hideFeedbackInstructions(), 300);
-      }
-    }, 10000);
+  hideFeedbackInstructions() {
+    const instructionsElement = document.getElementById(
+      "feedback-instructions"
+    );
+    if (instructionsElement) {
+      instructionsElement.style.transform = "translateY(100%)";
+      setTimeout(() => instructionsElement.remove(), 300);
+    }
+  }
+
+  hideFeedbackInstructions() {
+    const instructionsElement = document.getElementById(
+      "feedback-instructions"
+    );
+    if (instructionsElement) {
+      instructionsElement.style.transform = "translateY(100%)";
+      setTimeout(() => instructionsElement.remove(), 300);
+    }
+  }
+
+  hideFeedbackInstructions() {
+    const instructionsElement = document.getElementById(
+      "feedback-instructions"
+    );
+    if (instructionsElement) {
+      instructionsElement.style.transform = "translateX(-50%) translateY(100%)";
+      setTimeout(() => instructionsElement.remove(), 300);
+    }
   }
 
   hideFeedbackInstructions() {
