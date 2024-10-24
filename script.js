@@ -9,6 +9,8 @@ class LinkGame {
     this.players = null;
     this.currentPlayerIndex = 0;
     this.intimateMode = false;
+    this.feedbackCardCounter = 0;
+    this.initializeSounds();
     this.initializeSounds();
     this.initializeElements();
     this.addIntimateToggle();
@@ -169,13 +171,14 @@ class LinkGame {
 
     document.head.appendChild(style);
     document.body.appendChild(notification);
-
-    setTimeout(() => {
-      notification.remove();
-    }, 2000);
   }
 
   showFeedbackInstructions() {
+    this.feedbackCardCounter++;
+
+    // Mostra le istruzioni solo ogni 5 carte
+    if (this.feedbackCardCounter % 5 !== 1) return;
+
     const instructions = db.categories.find(
       (c) => c.id === "feedback"
     ).instructions;
@@ -193,12 +196,49 @@ class LinkGame {
       border-radius: 15px;
       font-size: 0.9rem;
       max-width: 90%;
-      width: 400px;
+      width: min(400px, 90vw);
       box-shadow: 0 4px 15px rgba(255, 71, 87, 0.2);
       z-index: 1000;
       animation: slideUp 0.3s ease-out;
       white-space: pre-line;
+      padding-right: 40px; /* Spazio per il pulsante di chiusura */
     `;
+
+    // Aggiunta del pulsante di chiusura
+    const closeButton = document.createElement("button");
+    closeButton.innerHTML = "✕";
+    closeButton.style.cssText = `
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: none;
+      border: none;
+      color: white;
+      font-size: 1.2rem;
+      cursor: pointer;
+      padding: 5px;
+      width: 30px;
+      height: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      transition: background-color 0.3s ease;
+    `;
+
+    // Effetto hover per il pulsante
+    closeButton.addEventListener("mouseover", () => {
+      closeButton.style.backgroundColor = "rgba(255, 255, 255, 0.2)";
+    });
+
+    closeButton.addEventListener("mouseout", () => {
+      closeButton.style.backgroundColor = "transparent";
+    });
+
+    // Event listener per la chiusura
+    closeButton.addEventListener("click", () => {
+      this.hideFeedbackInstructions();
+    });
 
     const style = document.createElement("style");
     style.textContent = `
@@ -206,11 +246,31 @@ class LinkGame {
         from { transform: translate(-50%, 100%); opacity: 0; }
         to { transform: translate(-50%, 0); opacity: 1; }
       }
+
+      @media (max-width: 480px) {
+        #feedback-instructions {
+          font-size: 0.85rem;
+          padding: 12px 35px 12px 15px;
+          bottom: 10px;
+        }
+      }
     `;
+
     document.head.appendChild(style);
 
     instructionsElement.textContent = instructions;
+    instructionsElement.appendChild(closeButton);
     document.body.appendChild(instructionsElement);
+
+    // Chiusura automatica dopo 10 secondi
+    setTimeout(() => {
+      const element = document.getElementById("feedback-instructions");
+      if (element) {
+        element.style.opacity = "0";
+        element.style.transform = "translate(-50%, 20px)";
+        setTimeout(() => this.hideFeedbackInstructions(), 300);
+      }
+    }, 10000);
   }
 
   hideFeedbackInstructions() {
@@ -218,7 +278,9 @@ class LinkGame {
       "feedback-instructions"
     );
     if (instructionsElement) {
-      instructionsElement.remove();
+      instructionsElement.style.opacity = "0";
+      instructionsElement.style.transform = "translate(-50%, 20px)";
+      setTimeout(() => instructionsElement.remove(), 300);
     }
   }
 
