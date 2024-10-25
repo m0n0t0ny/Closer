@@ -92,7 +92,6 @@ class Closer {
       color: #1a1c1e;
     `;
 
-    // Imposta la data di default a domani
     const tomorrow = new Date();
     tomorrow.setDate(tomorrow.getDate() + 1);
     datePicker.value = tomorrow.toISOString().split("T")[0];
@@ -103,57 +102,80 @@ class Closer {
       justify-content: center;
       gap: 1rem;
       margin-top: 1rem;
+      flex-wrap: wrap;
     `;
 
-    const createShareButton = (text, icon, action) => {
-      const button = document.createElement("button");
-      button.innerHTML = `${icon}<br>${text}`;
-      button.style.cssText = `
-        background: #6c5ae4;
-        color: white;
-        border: none;
-        border-radius: 12px;
-        padding: 15px;
-        font-size: 0.9rem;
-        cursor: pointer;
-        flex: 1;
-        max-width: 100px;
-        transition: all 0.3s ease;
-      `;
-      button.addEventListener("click", () => {
-        const selectedDate = new Date(datePicker.value);
-        const formattedDate = selectedDate.toLocaleDateString("it-IT");
-        const currentPlayer = this.players[this.currentPlayerIndex];
-        const otherPlayer = this.players[this.currentPlayerIndex + 1];
-        const text = `${otherPlayer.name} si impegna a:\n${this.currentCard.question}\nEntro il: ${formattedDate}`;
+    const buttonStyle = `
+      background: #6c5ae4;
+      color: white;
+      border: none;
+      border-radius: 12px;
+      padding: 15px;
+      font-size: 0.9rem;
+      cursor: pointer;
+      flex: 1;
+      max-width: 100px;
+      transition: all 0.3s ease;
+    `;
 
-        switch (action) {
-          case "whatsapp":
-            window.open(`https://wa.me/?text=${encodeURIComponent(text)}`);
-            break;
-          case "email":
-            window.open(
-              `mailto:?subject=Closer%20-%20Nuovo%20Obbligo&body=${encodeURIComponent(
-                text
-              )}`
-            );
-            break;
-          case "pdf":
-            this.generatePDF(text);
-            break;
-        }
-        popup.remove();
-      });
-      return button;
+    // Funzione per ottenere il testo formattato
+    const getFormattedText = () => {
+      const selectedDate = new Date(datePicker.value);
+      const formattedDate = selectedDate.toLocaleDateString("it-IT");
+      const otherPlayer = this.players[(this.currentPlayerIndex + 1) % 2];
+      return `${otherPlayer.name} ${this.currentCard.question} Entro il: ${formattedDate}`;
     };
 
-    const whatsappBtn = createShareButton("WhatsApp", "💬", "whatsapp");
-    const emailBtn = createShareButton("Email", "📧", "email");
-    const pdfBtn = createShareButton("PDF", "📄", "pdf");
+    // WhatsApp Button
+    const whatsappBtn = document.createElement("button");
+    whatsappBtn.innerHTML = `💬<br>WhatsApp`;
+    whatsappBtn.style.cssText = buttonStyle;
+    whatsappBtn.addEventListener("click", () => {
+      const text = getFormattedText();
+      window.open(`https://wa.me/?text=${encodeURIComponent(text)}`);
+      this.downloadCardAsPNG(text);
+      popup.remove();
+    });
+
+    // Email Button
+    const emailBtn = document.createElement("button");
+    emailBtn.innerHTML = `📧<br>Email`;
+    emailBtn.style.cssText = buttonStyle;
+    emailBtn.addEventListener("click", () => {
+      const text = getFormattedText();
+      window.open(
+        `mailto:?subject=Closer%20-%20Nuovo%20Obbligo&body=${encodeURIComponent(
+          text
+        )}`
+      );
+      this.downloadCardAsPNG(text);
+      popup.remove();
+    });
+
+    // PDF Button
+    const pdfBtn = document.createElement("button");
+    pdfBtn.innerHTML = `📄<br>PDF`;
+    pdfBtn.style.cssText = buttonStyle;
+    pdfBtn.addEventListener("click", () => {
+      const text = getFormattedText();
+      this.generatePDF(text);
+      popup.remove();
+    });
+
+    // PNG Button
+    const pngBtn = document.createElement("button");
+    pngBtn.innerHTML = `💾<br>Immagine`;
+    pngBtn.style.cssText = buttonStyle;
+    pngBtn.addEventListener("click", () => {
+      const text = getFormattedText();
+      this.downloadCardAsPNG(text);
+      popup.remove();
+    });
 
     shareOptions.appendChild(whatsappBtn);
     shareOptions.appendChild(emailBtn);
     shareOptions.appendChild(pdfBtn);
+    shareOptions.appendChild(pngBtn);
 
     content.appendChild(title);
     content.appendChild(datePicker);
@@ -161,25 +183,306 @@ class Closer {
     popup.appendChild(content);
     document.body.appendChild(popup);
 
-    // Chiudi popup cliccando fuori
     popup.addEventListener("click", (e) => {
       if (e.target === popup) popup.remove();
     });
   }
 
+  async downloadCardAsPNG(text) {
+    try {
+      const svgString = this.generateSVG(text);
+      const canvas = document.createElement("canvas");
+      const ctx = canvas.getContext("2d");
+      const pixelRatio = window.devicePixelRatio || 1;
+
+      canvas.width = 340 * pixelRatio;
+      canvas.height = 440 * pixelRatio;
+
+      ctx.scale(pixelRatio, pixelRatio);
+      ctx.fillStyle = "white";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.onload = () => {
+          ctx.drawImage(img, 0, 0, 340, 440);
+
+          canvas.toBlob((blob) => {
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            link.href = url;
+            link.download = "obbligo.png";
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+            this.showNotification("Immagine scaricata! 🖼️");
+            resolve();
+          }, "image/png");
+        };
+
+        img.onerror = reject;
+        const blob = new Blob([svgString], { type: "image/svg+xml" });
+        img.src = URL.createObjectURL(blob);
+      });
+    } catch (error) {
+      console.error("Errore durante la conversione:", error);
+      this.showNotification("Errore durante il download 😕");
+    }
+  }
+
+  // Modifica anche il createShareButton per WhatsApp
+  createShareButton(text, icon, action) {
+    const button = document.createElement("button");
+    button.innerHTML = `${icon}<br>${text}`;
+    button.style.cssText = `
+      background: #6c5ae4;
+      color: white;
+      border: none;
+      border-radius: 12px;
+      padding: 15px;
+      font-size: 0.9rem;
+      cursor: pointer;
+      flex: 1;
+      max-width: 100px;
+      transition: all 0.3s ease;
+    `;
+
+    button.addEventListener("click", async () => {
+      const selectedDate = new Date(datePicker.value);
+      const formattedDate = selectedDate.toLocaleDateString("it-IT");
+      const currentPlayer = this.players[this.currentPlayerIndex];
+      const otherPlayer = this.players[(this.currentPlayerIndex + 1) % 2];
+      const text = `${otherPlayer.name} ${this.currentCard.question} Entro il: ${formattedDate}`;
+
+      switch (action) {
+        case "whatsapp":
+          const instructions = document.createElement("div");
+          instructions.style.cssText = `
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            z-index: 1002;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+            max-width: 90%;
+            width: 400px;
+          `;
+          instructions.innerHTML = `
+            <h3 style="margin-bottom: 15px; color: #1a1c1e;">Condivisione su WhatsApp</h3>
+            <p style="margin-bottom: 15px; color: #4a4a4a;">
+              1. Attendi il download dell'immagine PNG<br>
+              2. Si aprirà WhatsApp Web con il testo<br>
+              3. Potrai allegare l'immagine appena scaricata
+            </p>
+            <button id="continue" style="
+              background: #6c5ae4;
+              color: white;
+              border: none;
+              border-radius: 8px;
+              padding: 10px 20px;
+              cursor: pointer;
+            ">Ho capito</button>
+          `;
+
+          document.body.appendChild(instructions);
+
+          document
+            .getElementById("continue")
+            .addEventListener("click", async () => {
+              instructions.remove();
+              await this.downloadCardAsPNG(text);
+              window.open(`https://wa.me/?text=${encodeURIComponent(text)}`);
+            });
+          break;
+        case "email":
+          this.downloadCardAsPNG(text);
+          window.open(
+            `mailto:?subject=Closer%20-%20Nuovo%20Obbligo&body=${encodeURIComponent(
+              text
+            )}`
+          );
+          break;
+        case "pdf":
+          this.downloadCardAsPNG(text);
+          break;
+      }
+      popup.remove();
+    });
+    return button;
+  }
+
+  showNotification(message) {
+    const notification = document.createElement("div");
+    notification.style.cssText = `
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #6c5ae4;
+      color: white;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      z-index: 1000;
+      animation: fadeInOut 2s forwards;
+    `;
+    notification.textContent = message;
+
+    const style = document.createElement("style");
+    style.textContent = `
+      @keyframes fadeInOut {
+        0% { opacity: 0; transform: translate(-50%, -20px); }
+        10% { opacity: 1; transform: translate(-50%, 0); }
+        90% { opacity: 1; transform: translate(-50%, 0); }
+        100% { opacity: 0; transform: translate(-50%, -20px); }
+      }
+    `;
+    document.head.appendChild(style);
+    document.body.appendChild(notification);
+
+    setTimeout(() => {
+      notification.remove();
+    }, 2000);
+  }
+
+  generateSVG(text) {
+    const regex = /^(.*?) (.*?) Entro il: (.*)$/;
+    const matches = text.match(regex);
+
+    if (!matches) {
+      console.error("Formato testo non valido");
+      return "";
+    }
+
+    const [_, playerText, task, dateText] = matches;
+
+    // Converti l'emoji in base64
+    const emojiDataUrl = this.getEmojiDataUrl("🔗", {
+      font: "60px Arial",
+      color: "#6c5ae4",
+    });
+
+    return `<svg xmlns="http://www.w3.org/2000/svg" width="340" height="440" viewBox="0 0 340 440">
+      <defs>
+        <linearGradient id="cardGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" style="stop-color:#6c5ae4" />
+          <stop offset="100%" style="stop-color:#a388ee" />
+        </linearGradient>
+        <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+          <feGaussianBlur in="SourceAlpha" stdDeviation="6"/>
+          <feOffset dx="0" dy="4" result="offsetblur"/>
+          <feComponentTransfer>
+            <feFuncA type="linear" slope="0.2"/>
+          </feComponentTransfer>
+          <feMerge>
+            <feMergeNode/>
+            <feMergeNode in="SourceGraphic"/>
+          </feMerge>
+        </filter>
+      </defs>
+
+      <!-- Card Background -->
+      <rect width="340" height="440" rx="28" ry="28" fill="white" filter="url(#shadow)"/>
+
+      <!-- Title -->
+      <text x="170" y="60" text-anchor="middle" 
+        font-family="Inter, sans-serif" font-size="24" font-weight="600" fill="#6c5ae4" letter-spacing="0.12em">
+        Obblighi
+      </text>
+
+      <!-- Emoji -->
+      <image x="140" y="90" width="60" height="60" href="${emojiDataUrl}"/>
+
+      <!-- Player Name -->
+      <text x="170" y="200" text-anchor="middle" 
+        font-family="Inter, sans-serif" font-size="20" font-weight="600" fill="#6c5ae4">
+        ${playerText}
+      </text>
+
+      <!-- Task (with text wrapping) -->
+      ${this.wrapText(task, 260, 240, 24)}
+
+      <!-- Date -->
+      <text x="170" y="380" text-anchor="middle" 
+        font-family="Inter, sans-serif" font-size="18" font-weight="500" fill="#6c5ae4">
+        Entro il: ${dateText}
+      </text>
+
+      <!-- Website -->
+      <text x="170" y="410" text-anchor="middle" 
+        font-family="Inter, sans-serif" font-size="14" fill="#636e72">
+        closergame.com
+      </text>
+    </svg>`;
+  }
+
+  getEmojiDataUrl(emoji, options = {}) {
+    const { font = "60px Arial", color = "#6c5ae4", size = 60 } = options;
+
+    const canvas = document.createElement("canvas");
+    canvas.width = size;
+    canvas.height = size;
+    const ctx = canvas.getContext("2d");
+
+    ctx.textBaseline = "middle";
+    ctx.textAlign = "center";
+    ctx.font = font;
+    ctx.fillStyle = color;
+    ctx.fillText(emoji, size / 2, size / 2);
+
+    return canvas.toDataURL("image/png");
+  }
+
+  wrapText(text, width, startY, fontSize) {
+    const words = text.split(" ");
+    const lineHeight = fontSize * 1.2;
+    let lines = [];
+    let currentLine = words[0];
+
+    for (let i = 1; i < words.length; i++) {
+      const word = words[i];
+      const width = currentLine.length * (fontSize * 0.6); // Approssimazione della larghezza
+
+      if (width < 260) {
+        currentLine += " " + word;
+      } else {
+        lines.push(currentLine);
+        currentLine = word;
+      }
+    }
+    lines.push(currentLine);
+
+    return lines
+      .map(
+        (line, i) => `
+        <text x="170" y="${startY + i * lineHeight}" text-anchor="middle" 
+            font-family="Inter, sans-serif" font-size="${fontSize}" fill="#1a1c1e">
+            ${line}
+        </text>
+    `
+      )
+      .join("");
+  }
+
   generatePDF(text) {
-    // Qui puoi implementare la generazione del PDF
-    // Per ora creiamo un file di testo scaricabile
-    const element = document.createElement("a");
-    element.setAttribute(
-      "href",
-      "data:text/plain;charset=utf-8," + encodeURIComponent(text)
-    );
-    element.setAttribute("download", "obbligo.txt");
-    element.style.display = "none";
-    document.body.appendChild(element);
-    element.click();
-    document.body.removeChild(element);
+    const svg = this.generateSVG(text);
+
+    // Crea il Blob e il link per il download
+    const blob = new Blob([svg], { type: "image/svg+xml" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "obbligo.svg";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
   }
 
   initializeElements() {
@@ -918,12 +1221,18 @@ class Closer {
       // Ora possiamo usare this.currentCard in sicurezza
       this.categoryElement.textContent = this.currentCard.category;
       this.categoryElement.style.color = this.currentCard.color;
-      this.questionElement.textContent = this.currentCard.question;
 
-      // Mostra/nascondi il pulsante di condivisione in base al tipo di carta
       if (this.currentCard.isObligation) {
+        // Ottieni il giocatore che deve eseguire l'obbligo
+        const otherPlayer = this.players[(this.currentPlayerIndex + 1) % 2];
+
+        // Modifica il testo della domanda per includere il nome del giocatore
+        this.questionElement.textContent = `${otherPlayer.name} ${this.currentCard.question}`;
+
+        // Mostra il pulsante di condivisione
         this.shareButton.style.display = "block";
       } else {
+        this.questionElement.textContent = this.currentCard.question;
         this.shareButton.style.display = "none";
       }
 
