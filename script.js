@@ -1062,10 +1062,6 @@ class Closer {
       flip: new Audio("./sounds/flip.mp3"),
       click: new Audio("./sounds/click.mp3"),
     };
-
-    Object.values(this.sounds).forEach((sound) => {
-      sound.volume = 0.5;
-    });
   }
 
   playSound(soundName) {
