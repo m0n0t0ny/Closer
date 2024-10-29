@@ -160,11 +160,12 @@ class Closer {
       left: 0;
       right: 0;
       bottom: 0;
-      background: rgba(0,0,0,0.8);
+      background: rgba(0,0,0,0);
       display: flex;
       justify-content: center;
       align-items: center;
       z-index: 1001;
+      transition: background-color 0.3s ease;
     `;
 
     const content = document.createElement("div");
@@ -181,6 +182,9 @@ class Closer {
       display: flex;
       flex-direction: column;
       gap: 1rem;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     `;
 
     const title = document.createElement("h3");
@@ -213,8 +217,8 @@ class Closer {
 
     const imagePreview = document.createElement("div");
     imagePreview.style.cssText = `
-      width: 340;
-      margin: 0 !important;
+      width: 340px;
+      margin: 0 auto;
       transform: scale(0.9);
       transform-origin: center center;
       transition: transform 0.3s ease;
@@ -272,39 +276,25 @@ class Closer {
     // Aggiorna la preview quando cambia la data
     datePicker.addEventListener("change", updatePreview);
 
+    // Funzione per animare la chiusura
+    const animateClose = (callback) => {
+      content.style.opacity = "0";
+      content.style.transform = "translateY(20px)";
+      popup.style.backgroundColor = "rgba(0,0,0,0)";
+
+      setTimeout(() => {
+        popup.remove();
+        if (callback) callback();
+      }, 300);
+    };
+
     // WhatsApp Button
     const whatsappBtn = document.createElement("button");
     whatsappBtn.innerHTML = `💬<br>WhatsApp`;
     whatsappBtn.style.cssText = buttonStyle;
     whatsappBtn.addEventListener("click", async () => {
       const text = getFormattedText();
-      popup.remove();
-      await this.shareOnWhatsApp(text);
-    });
-
-    // Email Button
-    const emailBtn = document.createElement("button");
-    emailBtn.innerHTML = `📧<br>Email`;
-    emailBtn.style.cssText = buttonStyle;
-    emailBtn.addEventListener("click", () => {
-      const text = getFormattedText();
-      window.open(
-        `mailto:?subject=Closer%20-%20Nuovo%20Obbligo&body=${encodeURIComponent(
-          text
-        )}`
-      );
-      this.downloadCardAsPNG(text);
-      popup.remove();
-    });
-
-    // PDF Button
-    const pdfBtn = document.createElement("button");
-    pdfBtn.innerHTML = `📄<br>PDF`;
-    pdfBtn.style.cssText = buttonStyle;
-    pdfBtn.addEventListener("click", () => {
-      const text = getFormattedText();
-      this.generatePDF(text);
-      popup.remove();
+      animateClose(async () => await this.shareOnWhatsApp(text));
     });
 
     // PNG Button
@@ -313,8 +303,7 @@ class Closer {
     pngBtn.style.cssText = buttonStyle;
     pngBtn.addEventListener("click", () => {
       const text = getFormattedText();
-      this.downloadCardAsPNG(text);
-      popup.remove();
+      animateClose(() => this.downloadCardAsPNG(text));
     });
 
     // Funzione per ottenere il testo formattato
@@ -330,8 +319,6 @@ class Closer {
     previewContainer.appendChild(imagePreview);
 
     shareOptions.appendChild(whatsappBtn);
-    shareOptions.appendChild(emailBtn);
-    shareOptions.appendChild(pdfBtn);
     shareOptions.appendChild(pngBtn);
 
     content.appendChild(title);
@@ -345,9 +332,18 @@ class Closer {
     // Inizializza la preview
     updatePreview();
 
+    // Anima l'apertura
+    requestAnimationFrame(() => {
+      popup.style.backgroundColor = "rgba(0,0,0,0.8)";
+      content.style.opacity = "1";
+      content.style.transform = "translateY(0)";
+    });
+
     // Chiudi il popup cliccando fuori
     popup.addEventListener("click", (e) => {
-      if (e.target === popup) popup.remove();
+      if (e.target === popup) {
+        animateClose();
+      }
     });
   }
 
