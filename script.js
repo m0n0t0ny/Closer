@@ -181,7 +181,6 @@ class Closer {
       overflow-y: auto;
       display: flex;
       flex-direction: column;
-      gap: 1rem;
       opacity: 0;
       transform: translateY(20px);
       transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -211,7 +210,7 @@ class Closer {
     previewTitle.style.cssText = `
       font-size: 0.9rem;
       color: #6c757d;
-      margin-bottom: 0.5rem;
+      margin-top: 1rem;
       font-weight: 500;
     `;
 
@@ -233,7 +232,7 @@ class Closer {
       border-radius: 12px;
       font-size: 1rem;
       color: #1a1c1e;
-      margin: 0.5rem 0;
+      margin-bottom: 0.5rem;
     `;
 
     const tomorrow = new Date();
