@@ -1,14 +1,29 @@
 <!DOCTYPE html>
-<html>
+<html lang="it">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <!-- HTML Meta Tags -->
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    />
+
+    <!-- Primary Meta Tags -->
     <title>Closər - Ad ogni carta più vicini</title>
     <meta
       name="description"
-      content="Closer è un gioco di carte digitale in italiano progettato per approfondire e rafforzare le relazioni di coppia attraverso domande significative e momenti di condivisione autentica. "
+      content="Closer è un gioco di carte digitale in italiano progettato per approfondire e rafforzare le relazioni di coppia attraverso domande significative e momenti di condivisione autentica."
     />
+
+    <!-- Mobile Web App Tags -->
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta
+      name="apple-mobile-web-app-status-bar-style"
+      content="black-translucent"
+    />
+    <meta name="apple-mobile-web-app-title" content="Closer" />
+    <meta name="format-detection" content="telephone=no" />
+    <meta name="theme-color" content="#6c5ce7" />
 
     <!-- Facebook Meta Tags -->
     <meta property="og:url" content="https://m0n0t0ny.github.io/Closer/" />
@@ -16,13 +31,8 @@
     <meta property="og:title" content="Closər - Ad ogni carta più vicini" />
     <meta
       property="og:description"
-      content="Closer è un gioco di carte digitale in italiano progettato per approfondire e rafforzare le relazioni di coppia attraverso domande significative e momenti di condivisione autentica. "
+      content="Closer è un gioco di carte digitale in italiano progettato per approfondire e rafforzare le relazioni di coppia attraverso domande significative e momenti di condivisione autentica."
     />
-    <!--
-  You can generate this image URL dynamically: https://ogcdn.net/e4b8c678-7bd5-445d-ba03-bfaad510c686/v4/{site_text}/{title_text}/{image_url}/og.png
-  Replace the variables in the brackets with your own values and use this URL in the image tag below this comment. Ensure values are URL encoded.
-  For more information, read: https://www.opengraph.xyz/blog/how-to-implement-dynamic-open-graph-images
--->
     <meta
       property="og:image"
       content="https://ogcdn.net/e4b8c678-7bd5-445d-ba03-bfaad510c686/v4/m0n0t0ny.github.io/Clos%C9%99r%20-%20Ad%20ogni%20carta%20pi%C3%B9%20vicini/https%3A%2F%2Fopengraph.b-cdn.net%2Fproduction%2Fimages%2F859c245b-3209-4c75-a30d-6f7eabd9897a.png%3Ftoken%3DmZDzo1yi2rMtlg4BPXeTGO-MfpWIB-j5_4OGk66URPk%26height%3D161%26width%3D126%26expires%3D33266163008/og.png"
@@ -35,19 +45,14 @@
     <meta name="twitter:title" content="Closər - Ad ogni carta più vicini" />
     <meta
       name="twitter:description"
-      content="Closer è un gioco di carte digitale in italiano progettato per approfondire e rafforzare le relazioni di coppia attraverso domande significative e momenti di condivisione autentica. "
+      content="Closer è un gioco di carte digitale in italiano progettato per approfondire e rafforzare le relazioni di coppia attraverso domande significative e momenti di condivisione autentica."
     />
-    <!--
-  You can generate this image URL dynamically: https://ogcdn.net/e4b8c678-7bd5-445d-ba03-bfaad510c686/v4/{site_text}/{title_text}/{image_url}/og.png
-  Replace the variables in the brackets with your own values and use this URL in the image tag below this comment. Ensure values are URL encoded.
-  For more information, read: https://www.opengraph.xyz/blog/how-to-implement-dynamic-open-graph-images
--->
     <meta
       name="twitter:image"
       content="https://ogcdn.net/e4b8c678-7bd5-445d-ba03-bfaad510c686/v4/m0n0t0ny.github.io/Clos%C9%99r%20-%20Ad%20ogni%20carta%20pi%C3%B9%20vicini/https%3A%2F%2Fopengraph.b-cdn.net%2Fproduction%2Fimages%2F859c245b-3209-4c75-a30d-6f7eabd9897a.png%3Ftoken%3DmZDzo1yi2rMtlg4BPXeTGO-MfpWIB-j5_4OGk66URPk%26height%3D161%26width%3D126%26expires%3D33266163008/og.png"
     />
 
-    <!-- Meta Tags Generated via https://www.opengraph.xyz -->
+    <!-- Favicon and App Icons -->
     <link
       rel="icon"
       type="image/png"
@@ -61,22 +66,17 @@
       sizes="180x180"
       href="./favicon/apple-touch-icon.png"
     />
-    <meta name="apple-mobile-web-app-title" content="Closer" />
-    <meta name="theme-color" content="#6c5ce7" />
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta
-      name="apple-mobile-web-app-status-bar-style"
-      content="black-translucent"
-    />
-    <meta name="apple-mobile-web-app-title" content="Closer" />
-    <link rel="manifest" href="./favicon/site.webmanifest" />
+
+    <!-- PWA Manifest -->
     <link rel="manifest" href="./favicon/manifest.json" />
+
+    <!-- Styles -->
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
     <div class="container">
       <h1>Closər</h1>
-      <p class="subtitle">by Antonio Bertuccio</p>
+      <p class="subtitle">closergame.net by Antonio Bertuccio</p>
       <div class="deck">
         <div class="card">
           <div class="card-face card-front">

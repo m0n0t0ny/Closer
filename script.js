@@ -417,7 +417,7 @@ class Closer {
       <!-- Website -->
       <text x="170" y="410" text-anchor="middle" 
         font-family="Inter, sans-serif" font-size="14" fill="#636e72">
-        closergame.com
+        closergame.net
       </text>
     </svg>`;
   }
