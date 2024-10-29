@@ -81,9 +81,16 @@ class Closer {
       const data = await response.json();
 
       if (data.success) {
+        // Log della risposta per debug
+        console.log("ImgBB response:", data.data);
+
+        // Estraiamo l'ID direttamente dall'URL
+        const imageId = data.data.id;
+
         this.showNotification("Immagine caricata con successo! 🎉");
         return {
           url: data.data.url,
+          id: imageId,
           delete_url: data.data.delete_url,
         };
       } else {
@@ -129,12 +136,12 @@ class Closer {
       // Upload to ImgBB
       const uploadResult = await this.uploadToImgBB(base64Image);
 
-      if (uploadResult?.url) {
+      if (uploadResult?.id) {
         // Store delete URL for later cleanup if needed
         this.lastUploadedImageDelete = uploadResult.delete_url;
 
-        // Create WhatsApp message with image and text
-        const whatsappText = `${text}\n\n${uploadResult.url}`;
+        // Create WhatsApp message with short URL using the direct ID
+        const whatsappText = `📍 Nuovo obbligo su Closer!\n\n${text}\n\nhttps://ibb.co/${uploadResult.id}`;
         window.open(`https://wa.me/?text=${encodeURIComponent(whatsappText)}`);
       } else {
         throw new Error("Upload failed");
@@ -207,7 +214,7 @@ class Closer {
     const imagePreview = document.createElement("div");
     imagePreview.style.cssText = `
       width: 340;
-      margin: 0 auto;
+      margin: 0 !important;
       transform: scale(0.9);
       transform-origin: center center;
       transition: transform 0.3s ease;
