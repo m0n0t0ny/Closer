@@ -219,7 +219,7 @@ class Closer {
     const imagePreview = document.createElement("div");
     imagePreview.style.cssText = `
       width: 341px;
-      margin: 0 auto;
+      margin: 0 !important;
       margin-left: -3px !important;
       transform: scale(0.9);
       transform-origin: center center;

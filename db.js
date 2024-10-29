@@ -182,7 +182,7 @@ const db = {
         "Quale mia abitudine ti fa venire voglia di urlarmi contro?",
         "Quale mia insicurezza trovi davvero insopportabile?",
         "In quali momenti ti vergogni di me?",
-        "Quale mio comportamento ti fa pensare 'ma che ho fatto a mettermi con tə'?",
+        "Quale mio comportamento ti fa pensare 'chi me lo ha fatto fare a mettermi con tə'?",
         "Quale mio difetto fisico noti sempre ma non mi hai mai detto?",
         "Quale parte del mio carattere speri proprio che nostrə figlə non erediti?",
         "In quali situazioni sociali vorresti che io fossi diversə?",
