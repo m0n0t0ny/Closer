@@ -141,7 +141,7 @@ class Closer {
         this.lastUploadedImageDelete = uploadResult.delete_url;
 
         // Create WhatsApp message with short URL using the direct ID
-        const whatsappText = `📍 Nuovo obbligo su Closer!\n\n${text}\n\nhttps://ibb.co/${uploadResult.id}`;
+        const whatsappText = `🔗 Nuovo obbligo su Closer!\n\n${text}\n\nhttps://ibb.co/${uploadResult.id}`;
         window.open(`https://wa.me/?text=${encodeURIComponent(whatsappText)}`);
       } else {
         throw new Error("Upload failed");
@@ -180,6 +180,8 @@ class Closer {
       max-height: 90vh;
       overflow-y: auto;
       display: flex;
+      align-items: center:
+      justify-content: center;
       flex-direction: column;
       opacity: 0;
       transform: translateY(20px);
@@ -216,8 +218,9 @@ class Closer {
 
     const imagePreview = document.createElement("div");
     imagePreview.style.cssText = `
-      width: 340px;
+      width: 341px;
       margin: 0 auto;
+      margin-left: -3px !important;
       transform: scale(0.9);
       transform-origin: center center;
       transition: transform 0.3s ease;
@@ -226,13 +229,15 @@ class Closer {
     const datePicker = document.createElement("input");
     datePicker.type = "date";
     datePicker.style.cssText = `
-      width: 100%;
+      width: 214px;
       padding: 12px;
       border: 2px solid #6c5ae4;
       border-radius: 12px;
       font-size: 1rem;
       color: #1a1c1e;
+      align-self: center;
       margin-bottom: 0.5rem;
+      text-align: center;
     `;
 
     const tomorrow = new Date();
@@ -548,10 +553,10 @@ class Closer {
 
       <!-- Rettangolo esterno per il bordo -->
       <rect width="340" height="440" rx="28" ry="28" 
-        fill="#6c5ae4"
+        fill="#6c757d50"
       />
       <!-- Rettangolo interno per il contenuto -->
-      <rect x="2" y="2" width="336" height="436" rx="26" ry="26" 
+      <rect x="1" y="1" width="338" height="438" rx="26" ry="26" 
         fill="white"
       />
 
@@ -565,7 +570,7 @@ class Closer {
         </text>
 
         <!-- Emoji -->
-        <image x="132" y="90" width="76" height="76" href="${emojiDataUrl}"/>
+        <!-- <image x="132" y="90" width="76" height="76" href="${emojiDataUrl}"/> -->
 
         <!-- Combined Text (wrapped) -->
         ${this.wrapText(combinedText, 280, 220, mainTextSize)}
