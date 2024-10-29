@@ -46,6 +46,105 @@ class Closer {
     shareButton.addEventListener("click", () => this.showSharePopup());
   }
 
+  async uploadToImgBB(base64Image) {
+    const API_KEY = "04133f29f9238bcd445d2be9a8192692";
+    const API_URL = "https://api.imgbb.com/1/upload";
+
+    try {
+      // Show loading notification
+      this.showNotification("Caricamento immagine in corso... ⏳");
+
+      // Remove the data:image/png;base64, prefix if present
+      const base64Data = base64Image.replace(/^data:image\/\w+;base64,/, "");
+
+      // Prepare form data
+      const formData = new FormData();
+      formData.append("key", API_KEY);
+      formData.append("image", base64Data);
+
+      // Add expiration - delete after 1 day to avoid accumulating images
+      formData.append("expiration", 86400);
+
+      // Upload image
+      const response = await fetch(API_URL, {
+        method: "POST",
+        body: formData,
+        headers: {
+          Accept: "application/json",
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+
+      if (data.success) {
+        this.showNotification("Immagine caricata con successo! 🎉");
+        return {
+          url: data.data.url,
+          delete_url: data.data.delete_url,
+        };
+      } else {
+        throw new Error(data.error?.message || "Upload failed");
+      }
+    } catch (error) {
+      console.error("Errore durante il caricamento:", error);
+      this.showNotification("Errore durante il caricamento dell'immagine 😕");
+      return null;
+    }
+  }
+
+  async shareOnWhatsApp(text) {
+    try {
+      // Create canvas and get image data
+      const canvas = document.createElement("canvas");
+      const ctx = canvas.getContext("2d");
+      const pixelRatio = window.devicePixelRatio || 1;
+
+      canvas.width = 340 * pixelRatio;
+      canvas.height = 440 * pixelRatio;
+
+      ctx.scale(pixelRatio, pixelRatio);
+      ctx.fillStyle = "white";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // Convert SVG to image
+      const svgString = this.generateSVG(text);
+      const img = new Image();
+
+      await new Promise((resolve, reject) => {
+        img.onload = resolve;
+        img.onerror = reject;
+        const blob = new Blob([svgString], { type: "image/svg+xml" });
+        img.src = URL.createObjectURL(blob);
+      });
+
+      ctx.drawImage(img, 0, 0, 340, 440);
+
+      // Get base64 image data
+      const base64Image = canvas.toDataURL("image/png");
+
+      // Upload to ImgBB
+      const uploadResult = await this.uploadToImgBB(base64Image);
+
+      if (uploadResult?.url) {
+        // Store delete URL for later cleanup if needed
+        this.lastUploadedImageDelete = uploadResult.delete_url;
+
+        // Create WhatsApp message with image and text
+        const whatsappText = `${text}\n\n${uploadResult.url}`;
+        window.open(`https://wa.me/?text=${encodeURIComponent(whatsappText)}`);
+      } else {
+        throw new Error("Upload failed");
+      }
+    } catch (error) {
+      console.error("Errore durante la condivisione:", error);
+      this.showNotification("Errore durante la condivisione 😕");
+    }
+  }
+
   showSharePopup() {
     const popup = document.createElement("div");
     popup.style.cssText = `
@@ -70,6 +169,11 @@ class Closer {
       max-width: 400px;
       text-align: center;
       box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+      max-height: 90vh;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
     `;
 
     const title = document.createElement("h3");
@@ -77,7 +181,36 @@ class Closer {
     title.style.cssText = `
       color: #1a1c1e;
       font-size: 1.5rem;
-      margin-bottom: 1.5rem;
+      margin: 0;
+    `;
+
+    const previewContainer = document.createElement("div");
+    previewContainer.style.cssText = `
+      position: relative;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 0;
+      margin: 0;
+    `;
+
+    const previewTitle = document.createElement("div");
+    previewTitle.textContent = "Anteprima";
+    previewTitle.style.cssText = `
+      font-size: 0.9rem;
+      color: #6c757d;
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+    `;
+
+    const imagePreview = document.createElement("div");
+    imagePreview.style.cssText = `
+      width: 340;
+      margin: 0 auto;
+      transform: scale(0.9);
+      transform-origin: center center;
+      transition: transform 0.3s ease;
     `;
 
     const datePicker = document.createElement("input");
@@ -88,8 +221,8 @@ class Closer {
       border: 2px solid #6c5ae4;
       border-radius: 12px;
       font-size: 1rem;
-      margin-bottom: 1.5rem;
       color: #1a1c1e;
+      margin: 0.5rem 0;
     `;
 
     const tomorrow = new Date();
@@ -101,7 +234,7 @@ class Closer {
       display: flex;
       justify-content: center;
       gap: 1rem;
-      margin-top: 1rem;
+      margin-top: 0.5rem;
       flex-wrap: wrap;
     `;
 
@@ -116,25 +249,30 @@ class Closer {
       flex: 1;
       max-width: 100px;
       transition: all 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 5px;
     `;
 
-    // Funzione per ottenere il testo formattato
-    const getFormattedText = () => {
-      const selectedDate = new Date(datePicker.value);
-      const formattedDate = selectedDate.toLocaleDateString("it-IT");
-      const otherPlayer = this.players[(this.currentPlayerIndex + 1) % 2];
-      return `${otherPlayer.name} ${this.currentCard.question} Entro il: ${formattedDate}`;
+    // Funzione per aggiornare la preview
+    const updatePreview = () => {
+      const text = getFormattedText();
+      const svgString = this.generateSVG(text);
+      imagePreview.innerHTML = svgString;
     };
+
+    // Aggiorna la preview quando cambia la data
+    datePicker.addEventListener("change", updatePreview);
 
     // WhatsApp Button
     const whatsappBtn = document.createElement("button");
     whatsappBtn.innerHTML = `💬<br>WhatsApp`;
     whatsappBtn.style.cssText = buttonStyle;
-    whatsappBtn.addEventListener("click", () => {
+    whatsappBtn.addEventListener("click", async () => {
       const text = getFormattedText();
-      window.open(`https://wa.me/?text=${encodeURIComponent(text)}`);
-      this.downloadCardAsPNG(text);
       popup.remove();
+      await this.shareOnWhatsApp(text);
     });
 
     // Email Button
@@ -172,17 +310,35 @@ class Closer {
       popup.remove();
     });
 
+    // Funzione per ottenere il testo formattato
+    const getFormattedText = () => {
+      const selectedDate = new Date(datePicker.value);
+      const formattedDate = selectedDate.toLocaleDateString("it-IT");
+      const otherPlayer = this.players[(this.currentPlayerIndex + 1) % 2];
+      return `${otherPlayer.name} ${this.currentCard.question} Entro il: ${formattedDate}`;
+    };
+
+    // Aggiungi elementi al DOM
+    previewContainer.appendChild(previewTitle);
+    previewContainer.appendChild(imagePreview);
+
     shareOptions.appendChild(whatsappBtn);
     shareOptions.appendChild(emailBtn);
     shareOptions.appendChild(pdfBtn);
     shareOptions.appendChild(pngBtn);
 
     content.appendChild(title);
+    content.appendChild(previewContainer);
     content.appendChild(datePicker);
     content.appendChild(shareOptions);
+
     popup.appendChild(content);
     document.body.appendChild(popup);
 
+    // Inizializza la preview
+    updatePreview();
+
+    // Chiudi il popup cliccando fuori
     popup.addEventListener("click", (e) => {
       if (e.target === popup) popup.remove();
     });
