@@ -546,11 +546,13 @@ class Closer {
         </filter>
       </defs>
 
-      <!-- Card Background and Border -->
+      <!-- Rettangolo esterno per il bordo -->
       <rect width="340" height="440" rx="28" ry="28" 
-        fill="white" 
-        stroke="#6c5ae4" 
-        stroke-width="1"
+        fill="#6c5ae4"
+      />
+      <!-- Rettangolo interno per il contenuto -->
+      <rect x="2" y="2" width="336" height="436" rx="26" ry="26" 
+        fill="white"
       />
 
       <!-- Group for content -->
@@ -568,14 +570,20 @@ class Closer {
         <!-- Combined Text (wrapped) -->
         ${this.wrapText(combinedText, 280, 220, mainTextSize)}
 
-        <!-- Date -->
-        <text x="170" y="380" text-anchor="middle" 
-          font-family="Inter, sans-serif" font-size="18" font-weight="500" fill="#6c5ae4">
-          Entro il: ${dateText}
+        <!-- Date Label -->
+        <text x="170" y="365" text-anchor="middle" 
+          font-family="Inter, sans-serif" font-size="24" fill="#1a1c1e">
+          entro il
+        </text>
+
+        <!-- Date Value -->
+        <text x="170" y="395" text-anchor="middle" 
+          font-family="Inter, sans-serif" font-size="24" font-weight="500" fill="#6c5ae4">
+          ${dateText}
         </text>
 
         <!-- Website -->
-        <text x="170" y="410" text-anchor="middle" 
+        <text x="170" y="420" text-anchor="middle" 
           font-family="Inter, sans-serif" font-size="14" fill="#636e72">
           closergame.net
         </text>
