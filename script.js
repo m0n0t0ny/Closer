@@ -361,19 +361,20 @@ class Closer {
     }
 
     const [_, playerText, task, dateText] = matches;
+    const combinedText = `${playerText} ${task}`;
 
-    // Converti l'emoji in base64
+    const titleSize = 16;
+    const mainTextSize = 24;
+
     const emojiDataUrl = this.getEmojiDataUrl("🔗", {
-      font: "60px Arial",
+      font: "38px Arial",
       color: "#6c5ae4",
+      size: 76,
     });
 
-    return `<svg xmlns="http://www.w3.org/2000/svg" width="340" height="440" viewBox="0 0 340 440">
+    return `<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+    <svg xmlns="http://www.w3.org/2000/svg" width="340" height="440" viewBox="0 0 340 440">
       <defs>
-        <linearGradient id="cardGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" style="stop-color:#6c5ae4" />
-          <stop offset="100%" style="stop-color:#a388ee" />
-        </linearGradient>
         <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
           <feGaussianBlur in="SourceAlpha" stdDeviation="6"/>
           <feOffset dx="0" dy="4" result="offsetblur"/>
@@ -387,39 +388,253 @@ class Closer {
         </filter>
       </defs>
 
-      <!-- Card Background -->
-      <rect width="340" height="440" rx="28" ry="28" fill="white" filter="url(#shadow)"/>
+      <!-- Card Background and Border -->
+      <rect width="340" height="440" rx="28" ry="28" 
+        fill="white" 
+        stroke="#6c5ae4" 
+        stroke-width="1"
+      />
 
-      <!-- Title -->
-      <text x="170" y="60" text-anchor="middle" 
-        font-family="Inter, sans-serif" font-size="24" font-weight="600" fill="#6c5ae4" letter-spacing="0.12em">
-        Obblighi
-      </text>
+      <!-- Group for content -->
+      <g>
+        <!-- Title -->
+        <text x="170" y="60" text-anchor="middle" 
+          font-family="Inter, sans-serif" font-size="${titleSize}px" font-weight="700" fill="#6c5ae4" 
+          letter-spacing="0.12em" text-transform="uppercase">
+          OBBLIGHI
+        </text>
 
-      <!-- Emoji -->
-      <image x="140" y="90" width="60" height="60" href="${emojiDataUrl}"/>
+        <!-- Emoji -->
+        <image x="132" y="90" width="76" height="76" href="${emojiDataUrl}"/>
 
-      <!-- Player Name -->
-      <text x="170" y="200" text-anchor="middle" 
-        font-family="Inter, sans-serif" font-size="20" font-weight="600" fill="#6c5ae4">
-        ${playerText}
-      </text>
+        <!-- Combined Text (wrapped) -->
+        ${this.wrapText(combinedText, 280, 220, mainTextSize)}
 
-      <!-- Task (with text wrapping) -->
-      ${this.wrapText(task, 260, 240, 24)}
+        <!-- Date -->
+        <text x="170" y="380" text-anchor="middle" 
+          font-family="Inter, sans-serif" font-size="18" font-weight="500" fill="#6c5ae4">
+          Entro il: ${dateText}
+        </text>
 
-      <!-- Date -->
-      <text x="170" y="380" text-anchor="middle" 
-        font-family="Inter, sans-serif" font-size="18" font-weight="500" fill="#6c5ae4">
-        Entro il: ${dateText}
-      </text>
-
-      <!-- Website -->
-      <text x="170" y="410" text-anchor="middle" 
-        font-family="Inter, sans-serif" font-size="14" fill="#636e72">
-        closergame.net
-      </text>
+        <!-- Website -->
+        <text x="170" y="410" text-anchor="middle" 
+          font-family="Inter, sans-serif" font-size="14" fill="#636e72">
+          closergame.net
+        </text>
+      </g>
     </svg>`;
+  }
+
+  async downloadCardAsPNG(text) {
+    try {
+      const svgString = this.generateSVG(text);
+      const canvas = document.createElement("canvas");
+      const ctx = canvas.getContext("2d");
+      const pixelRatio = window.devicePixelRatio || 1;
+
+      canvas.width = 340 * pixelRatio;
+      canvas.height = 440 * pixelRatio;
+
+      // Assicuriamoci che il canvas sia trasparente
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      ctx.scale(pixelRatio, pixelRatio);
+
+      return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.onload = () => {
+          ctx.drawImage(img, 0, 0, 340, 440);
+
+          canvas.toBlob((blob) => {
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            link.href = url;
+            link.download = "obbligo.png";
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+            this.showNotification("Immagine scaricata! 🖼️");
+            resolve();
+          }, "image/png"); // Specifichiamo esplicitamente il formato PNG
+        };
+
+        img.onerror = reject;
+
+        // Convertiamo l'SVG in una URL data con la codifica corretta
+        const svgBlob = new Blob([svgString], {
+          type: "image/svg+xml;charset=utf-8",
+        });
+        const svgUrl = URL.createObjectURL(svgBlob);
+        img.src = svgUrl;
+      });
+    } catch (error) {
+      console.error("Errore durante la conversione:", error);
+      this.showNotification("Errore durante il download 😕");
+    }
+  }
+
+  getEmojiDataUrl(emoji, options = {}) {
+    const { font = "38px Arial", color = "#6c5ae4", size = 76 } = options;
+
+    const canvas = document.createElement("canvas");
+    canvas.width = size * 2;
+    canvas.height = size * 2;
+    const ctx = canvas.getContext("2d");
+
+    // Imposta il canvas come trasparente
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    ctx.textBaseline = "middle";
+    ctx.textAlign = "center";
+    ctx.font = font;
+    ctx.fillStyle = color;
+    ctx.fillText(emoji, canvas.width / 2, canvas.height / 2);
+
+    return canvas.toDataURL("image/png");
+  }
+
+  wrapText(text, width, startY, fontSize) {
+    const words = text.split(" ");
+    const lineHeight = fontSize * 1.2;
+    let lines = [];
+    let currentLine = words[0];
+
+    for (let i = 1; i < words.length; i++) {
+      const word = words[i];
+      const width = currentLine.length * (fontSize * 0.6);
+
+      if (width < 260) {
+        currentLine += " " + word;
+      } else {
+        lines.push(currentLine);
+        currentLine = word;
+      }
+    }
+    lines.push(currentLine);
+
+    return lines
+      .map(
+        (line, i) => `
+        <text x="170" y="${startY + i * lineHeight}" text-anchor="middle" 
+            font-family="Inter, sans-serif" font-size="${fontSize}px" font-weight="400" fill="#1a1c1e">
+            ${line}
+        </text>
+    `
+      )
+      .join("");
+  }
+
+  getEmojiDataUrl(emoji, options = {}) {
+    const { font = "38px Arial", color = "#6c5ae4", size = 76 } = options;
+
+    const canvas = document.createElement("canvas");
+    // Aumenta significativamente la dimensione del canvas per più padding
+    canvas.width = size * 2;
+    canvas.height = size * 2;
+    const ctx = canvas.getContext("2d");
+
+    ctx.textBaseline = "middle";
+    ctx.textAlign = "center";
+    ctx.font = font;
+    ctx.fillStyle = color;
+    // Centra l'emoji con molto più spazio intorno
+    ctx.fillText(emoji, canvas.width / 2, canvas.height / 2);
+
+    return canvas.toDataURL("image/png");
+  }
+
+  wrapText(text, width, startY, fontSize) {
+    const words = text.split(" ");
+    const lineHeight = fontSize * 1.2;
+    let lines = [];
+    let currentLine = words[0];
+
+    for (let i = 1; i < words.length; i++) {
+      const word = words[i];
+      const width = currentLine.length * (fontSize * 0.6);
+
+      if (width < 260) {
+        currentLine += " " + word;
+      } else {
+        lines.push(currentLine);
+        currentLine = word;
+      }
+    }
+    lines.push(currentLine);
+
+    return lines
+      .map(
+        (line, i) => `
+        <text x="170" y="${startY + i * lineHeight}" text-anchor="middle" 
+            font-family="Inter, sans-serif" font-size="${fontSize}px" font-weight="400" fill="#1a1c1e">
+            ${line}
+        </text>
+    `
+      )
+      .join("");
+  }
+
+  wrapText(text, width, startY, fontSize) {
+    const words = text.split(" ");
+    const lineHeight = fontSize * 1.2;
+    let lines = [];
+    let currentLine = words[0];
+
+    for (let i = 1; i < words.length; i++) {
+      const word = words[i];
+      const width = currentLine.length * (fontSize * 0.6);
+
+      if (width < 260) {
+        currentLine += " " + word;
+      } else {
+        lines.push(currentLine);
+        currentLine = word;
+      }
+    }
+    lines.push(currentLine);
+
+    return lines
+      .map(
+        (line, i) => `
+        <text x="170" y="${startY + i * lineHeight}" text-anchor="middle" 
+            font-family="Inter, sans-serif" font-size="${fontSize}px" font-weight="400" fill="#1a1c1e">
+            ${line}
+        </text>
+    `
+      )
+      .join("");
+  }
+
+  wrapText(text, width, startY, fontSize, color = "#1a1c1e") {
+    const words = text.split(" ");
+    const lineHeight = fontSize * 1.2;
+    let lines = [];
+    let currentLine = words[0];
+
+    for (let i = 1; i < words.length; i++) {
+      const word = words[i];
+      const width = currentLine.length * (fontSize * 0.6);
+
+      if (width < 260) {
+        currentLine += " " + word;
+      } else {
+        lines.push(currentLine);
+        currentLine = word;
+      }
+    }
+    lines.push(currentLine);
+
+    return lines
+      .map(
+        (line, i) => `
+        <text x="170" y="${startY + i * lineHeight}" text-anchor="middle" 
+            font-family="Inter, sans-serif" font-size="${fontSize}" font-weight="500" fill="${color}">
+            ${line}
+        </text>
+    `
+      )
+      .join("");
   }
 
   getEmojiDataUrl(emoji, options = {}) {
