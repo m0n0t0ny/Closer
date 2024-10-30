@@ -8,12 +8,9 @@ class Closer {
     this.currentCard = null;
     this.players = null;
     this.currentPlayerIndex = 0;
-    this.intimacyMode = false;
-    this.tabuMode = false;
-    this.obligationsMode = false;
     this.initializeSounds();
     this.initializeElements();
-    this.addIntimacyToggle();
+    this.addCategoryToggles();
     this.initializeFullDeck();
     this.getPlayerNames();
     this.addGameGuide();
@@ -950,32 +947,104 @@ class Closer {
     document.body.appendChild(guidePanel);
   }
 
-  addIntimacyToggle() {
+  addCategoryToggles() {
     const toggleContainer = document.createElement("div");
     toggleContainer.classList.add("toggles-container");
+
+    // Creiamo il wrapper per i toggle
+    const togglesWrapper = document.createElement("div");
+    togglesWrapper.classList.add("toggles-wrapper");
+
+    // Mappa delle categorie con le loro proprietà
+    const categoryConfigs = [
+      {
+        id: "emotions",
+        label: "Emozioni",
+        icon: "💕",
+        color: "#d7868a",
+        checked: true,
+      },
+      {
+        id: "moments",
+        label: "Momenti",
+        icon: "✨",
+        color: "#6ccef6",
+        checked: true,
+      },
+      {
+        id: "growth",
+        label: "Crescita",
+        icon: "🌱",
+        color: "#bfd82d",
+        checked: true,
+      },
+      {
+        id: "dreams",
+        label: "Sogni",
+        icon: "🌠",
+        color: "#3974d5",
+        checked: true,
+      },
+      {
+        id: "communication",
+        label: "Comunicazione",
+        icon: "🤝",
+        color: "#f5cb48",
+        checked: true,
+      },
+      {
+        id: "intimacy",
+        label: "Intimità",
+        icon: "🔥",
+        color: "#e46f16",
+        property: "intimacyMode",
+        checked: false,
+      },
+      {
+        id: "tabu",
+        label: "Tabù",
+        icon: "💣",
+        color: "#383838",
+        property: "tabuMode",
+        checked: false,
+      },
+      {
+        id: "obligations",
+        label: "Obblighi",
+        icon: "🔗",
+        color: "#6c5ae4",
+        property: "obligationsMode",
+        checked: false,
+      },
+    ];
+
+    // Aggiungiamo le proprietà al this per tracciare lo stato di ogni categoria
+    categoryConfigs.forEach((config) => {
+      if (!this[`${config.id}Enabled`]) {
+        this[`${config.id}Enabled`] = config.checked;
+      }
+    });
+
+    // Stile per il container principale
     toggleContainer.innerHTML = `
       <div class="toggles-wrapper">
-        <div class="toggle-wrapper">
-          <label class="toggle">
-            <input type="checkbox" id="intimacyToggle">
-            <span class="toggle-slider"></span>
-          </label>
-          <span class="toggle-label">Intimità</span>
-        </div>
-        <div class="toggle-wrapper">
-          <label class="toggle">
-            <input type="checkbox" id="tabuToggle">
-            <span class="toggle-slider"></span>
-          </label>
-          <span class="toggle-label">Tabù</span>
-        </div>
-        <div class="toggle-wrapper">
-          <label class="toggle">
-            <input type="checkbox" id="obligationsToggle">
-            <span class="toggle-slider"></span>
-          </label>
-          <span class="toggle-label">Obblighi</span>
-        </div>
+        ${categoryConfigs
+          .map(
+            (config) => `
+          <div class="toggle-wrapper" data-category="${config.id}">
+            <label class="toggle">
+              <input type="checkbox" id="${config.id}Toggle" ${
+              config.checked ? "checked" : ""
+            }>
+              <span class="toggle-slider" style="background-color: ${
+                config.checked ? config.color : "#ccc"
+              }"></span>
+            </label>
+            <span class="toggle-label">${config.icon} ${config.label}</span>
+          </div>
+        `
+          )
+          .join("")}
       </div>
     `;
 
@@ -988,38 +1057,46 @@ class Closer {
         gap: 1rem;
         flex-wrap: wrap;
       }
-  
+    
       .toggles-wrapper {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
         gap: 10px;
         padding: 16px;
         background: white;
         border-radius: 24px;
         box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        max-width: 600px;
+        width: 90%;
       }
-  
+    
       .toggle-wrapper {
-        width:100%;
         display: flex;
         align-items: center;
         gap: 10px;
+        padding: 8px;
+        border-radius: 12px;
+        transition: background-color 0.3s ease;
       }
   
+      .toggle-wrapper:hover {
+        background-color: rgba(0,0,0,0.05);
+      }
+    
       .toggle {
         position: relative;
         display: inline-block;
         width: 50px;
         height: 24px;
+        flex-shrink: 0;
       }
-  
+    
       .toggle input {
         opacity: 0;
         width: 0;
         height: 0;
       }
-  
+    
       .toggle-slider {
         position: absolute;
         cursor: pointer;
@@ -1031,7 +1108,7 @@ class Closer {
         transition: .4s;
         border-radius: 24px;
       }
-  
+    
       .toggle-slider:before {
         position: absolute;
         content: "";
@@ -1043,39 +1120,74 @@ class Closer {
         transition: .4s;
         border-radius: 50%;
       }
-  
-      #intimacyToggle:checked + .toggle-slider {
-        background-color: #e89a41;
-      }
-  
-      #tabuToggle:checked + .toggle-slider {
-        background-color: #383838;
-      }
-
-      #obligationsToggle:checked + .toggle-slider {
-        background-color: #6c5ae4;
-      }
-  
+    
       .toggle input:checked + .toggle-slider:before {
         transform: translateX(26px);
       }
-  
+    
       .toggle-label {
         font-size: 0.9rem;
         color: #666;
         user-select: none;
+        white-space: nowrap;
       }
   
-      [data-theme="dark"] .toggle-wrapper {
-        background: #2d3436;
-      }
-  
-      [data-theme="dark"] .toggle-label {
-        color: #fff;
+      @media (max-width: 480px) {
+        .toggles-wrapper {
+          grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+        }
+        
+        .toggle-label {
+          font-size: 0.8rem;
+        }
       }
     `;
 
     document.head.appendChild(style);
+
+    // Aggiunge i listener per ogni toggle
+    categoryConfigs.forEach((config) => {
+      const toggle = toggleContainer.querySelector(`#${config.id}Toggle`);
+      if (toggle) {
+        toggle.addEventListener("change", (e) => {
+          // Aggiorna lo stato della categoria
+          this[`${config.id}Enabled`] = e.target.checked;
+
+          // Se è una modalità speciale, aggiorna anche quella proprietà
+          if (config.property) {
+            this[config.property] = e.target.checked;
+          }
+
+          // Aggiorna il colore dello slider
+          const slider = toggle.nextElementSibling;
+          slider.style.backgroundColor = e.target.checked
+            ? config.color
+            : "#ccc";
+
+          // Controlla che ci sia almeno una categoria attiva
+          const anyEnabled = categoryConfigs.some(
+            (cat) => this[`${cat.id}Enabled`]
+          );
+
+          if (!anyEnabled) {
+            // Se nessuna categoria è attiva, riattiva questa e mostra un messaggio
+            e.target.checked = true;
+            this[`${config.id}Enabled`] = true;
+            if (config.property) {
+              this[config.property] = true;
+            }
+            slider.style.backgroundColor = config.color;
+            this.showNotification(
+              "Almeno una categoria deve essere attiva! 🎯"
+            );
+          } else {
+            // Reinizializza il mazzo con le nuove impostazioni
+            this.initializeFullDeck();
+            this.shuffleDeck();
+          }
+        });
+      }
+    });
 
     const cardsRemainingElement = document.querySelector(".cards-remaining");
     if (cardsRemainingElement) {
@@ -1084,46 +1196,20 @@ class Closer {
         cardsRemainingElement.nextSibling
       );
     }
-
-    // Aggiungi la proprietà tabuMode alla classe
-    this.tabuMode = false;
-
-    const intimacyToggle = document.getElementById("intimacyToggle");
-    const tabuToggle = document.getElementById("tabuToggle");
-    const obligationsToggle = document.getElementById("obligationsToggle");
-
-    if (intimacyToggle) {
-      intimacyToggle.addEventListener("change", (e) => {
-        this.intimacyMode = e.target.checked;
-        this.initializeFullDeck();
-        this.shuffleDeck();
-      });
-    }
-
-    if (tabuToggle) {
-      tabuToggle.addEventListener("change", (e) => {
-        this.tabuMode = e.target.checked;
-        this.initializeFullDeck();
-        this.shuffleDeck();
-      });
-    }
-
-    if (obligationsToggle) {
-      obligationsToggle.addEventListener("change", (e) => {
-        this.obligationsMode = e.target.checked;
-        this.initializeFullDeck();
-        this.shuffleDeck();
-      });
-    }
   }
 
   initializeFullDeck() {
     this.fullDeck = db.categories
       .filter((category) => {
-        if (!this.intimacyMode && category.isIntimacy) return false;
-        if (!this.tabuMode && category.isTabu) return false;
-        if (!this.obligationsMode && category.isObligation) return false;
-        return true;
+        // Controlla se la categoria è abilitata
+        const categoryEnabled = this[`${category.id}Enabled`];
+
+        // Se è una categoria speciale, controlla anche la modalità
+        if (category.isIntimacy && !this.intimacyMode) return false;
+        if (category.isTabu && !this.tabuMode) return false;
+        if (category.isObligation && !this.obligationsMode) return false;
+
+        return categoryEnabled;
       })
       .flatMap((category) =>
         category.questions.map((question) => ({
@@ -1131,7 +1217,6 @@ class Closer {
           question: question,
           icon: category.icon,
           color: category.color,
-          instructions: category.instructions,
           isTabu: category.isTabu,
           isIntimacy: category.isIntimacy,
           isObligation: category.isObligation,
