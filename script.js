@@ -720,137 +720,203 @@ class Closer {
     const helpButton = document.createElement("button");
     helpButton.innerHTML = "❔";
     helpButton.style.cssText = `
-    width: 40px;
-    height: 40px;
-    scale: 1/1;
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    padding: 10px;
-    background: #6c5ce7;
-    color: white;
-    border: none;
-    border-radius: 9999px;
-    font-size: 0.9rem;
-    cursor: pointer;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    transition: all 0.3s ease;
-    z-index: 1000;
-  `;
+      width: 40px;
+      height: 40px;
+      scale: 1/1;
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 10px;
+      background: #6c5ce7;
+      color: white;
+      border: none;
+      border-radius: 9999px;
+      font-size: 0.9rem;
+      cursor: pointer;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      transition: all 0.3s ease;
+      z-index: 1000;
+    `;
 
     // Crea il pannello delle istruzioni
     const guidePanel = document.createElement("div");
     guidePanel.style.cssText = `
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%) scale(0.9);
-    width: 90%;
-    max-width: 500px;
-    background: white;
-    border-radius: 20px;
-    font-size: 12px;
-    padding: 30px 15px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-    opacity: 0;
-    visibility: hidden;
-    transition: all 0.3s ease;
-    z-index: 1001;
-  `;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0.9);
+      width: 90%;
+      max-width: 500px;
+      background: white;
+      border-radius: 20px;
+      font-size: 14px;
+      padding: 30px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s ease;
+      z-index: 1001;
+      max-height: 90vh;
+      overflow-y: auto;
+      
+      /* Nasconde scrollbar in Firefox */
+      scrollbar-width: none;
+      
+      /* Nasconde scrollbar in IE/Edge */
+      -ms-overflow-style: none;
+    `;
+
+    // Aggiunge stile per nascondere la scrollbar in Chrome/Safari
+    const style = document.createElement("style");
+    style.textContent = `
+      #gameGuidePanel::-webkit-scrollbar {
+        display: none;
+      }
+    `;
+    document.head.appendChild(style);
+
+    // Assegna ID al pannello per il selettore CSS
+    guidePanel.id = "gameGuidePanel";
 
     // Crea l'overlay scuro
     const overlay = document.createElement("div");
     overlay.style.cssText = `
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0,0,0,0.7);
-    opacity: 0;
-    visibility: hidden;
-    transition: all 0.3s ease;
-    z-index: 1000;
-  `;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.7);
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s ease;
+      z-index: 1000;
+    `;
 
-    // Contenuto della guida
+    // Contenuto della guida con padding aggiuntivo in fondo per miglior scrolling
     guidePanel.innerHTML = `
-    <div style="position: relative;">
-      <h2 style="
-        color: #6c5ce7;
-        font-size: 1.5rem;
-        margin-bottom: 30px;
-        text-align: center;
-      ">Come si gioca</h2>
-      
-      <button id="closeGuide" style="
-        position: absolute;
-        scale: 1/1;
-        top: -30px;
-        right: -20px;
-        border: none;
-        background: #ffffff00;
-        color: #ea5957;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1.2rem;
-      ">×</button>
-
-      <div style="margin-bottom: 25px;">
-        <h3 style="
-          color: #1a1c1e;
-          font-size: 1.1rem;
-          margin-bottom: 10px;
-        ">📌 Scopo del Gioco</h3>
+      <div style="position: relative; padding-bottom: 20px;">
+        <h2 style="
+          color: #6c5ce7;
+          font-size: 1.5rem;
+          margin-bottom: 30px;
+          text-align: center;
+        ">Come si gioca</h2>
+        
+        <button id="closeGuide" style="
+          position: absolute;
+          scale: 1/1;
+          top: -20px;
+          right: -10px;
+          border: none;
+          background: transparent;
+          color: #ea5957;
+          cursor: pointer;
+          font-size: 1.5rem;
+        ">×</button>
+  
+        <div style="margin-bottom: 25px;">
+          <h3 style="
+            color: #1a1c1e;
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+          ">📌 Scopo del Gioco</h3>
+          <p style="
+            color: #4a4a4a;
+            line-height: 1.5;
+            margin-bottom: 15px;
+          ">Closer è un gioco di carte pensato per rafforzare le relazioni di coppia attraverso la condivisione autentica e il dialogo profondo.</p>
+        </div>
+  
+        <div style="margin-bottom: 25px;">
+          <h3 style="
+            color: #1a1c1e;
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+          ">🎮 Regole Base</h3>
+          <ul style="
+            color: #4a4a4a;
+            line-height: 1.5;
+            padding-left: 20px;
+            margin-bottom: 15px;
+          ">
+            <li>Il gioco si svolge a turno tra due giocatori</li>
+            <li>Cliccate sulla carta per rivelare una domanda</li>
+            <li>Leggete la domanda e rispondete con sincerità</li>
+            <li>Prendetevi il tempo necessario per dialogare</li>
+            <li>Cliccate di nuovo per passare al turno successivo</li>
+          </ul>
+        </div>
+  
+        <div style="margin-bottom: 25px;">
+          <h3 style="
+            color: #1a1c1e;
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+          ">💡 Linee Guida Generali</h3>
+          <ul style="
+            color: #4a4a4a;
+            line-height: 1.5;
+            padding-left: 20px;
+            margin-bottom: 15px;
+          ">
+            <li>Scegliete un momento tranquillo senza distrazioni</li>
+            <li>Ascoltate con attenzione e senza giudicare</li>
+            <li>Siate onesti nelle risposte</li>
+            <li>Mantenete un dialogo costruttivo</li>
+            <li>È ok prendersi una pausa se necessario</li>
+            <li>Concludete sempre con qualcosa di positivo sull'altrə</li>
+          </ul>
+        </div>
+  
+        <div style="margin-bottom: 25px;">
+          <h3 style="
+            color: #1a1c1e;
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+          ">💣 Per Domande Tabù</h3>
+          <ul style="
+            color: #4a4a4a;
+            line-height: 1.5;
+            padding-left: 20px;
+            margin-bottom: 15px;
+          ">
+            <li>Ricordate che sono pensate per essere scomode</li>
+            <li>L'obiettivo è crescere insieme, non ferirsi</li>
+            <li>Potete saltare le domande troppo difficili</li>
+          </ul>
+        </div>
+  
+        <div>
+          <h3 style="
+            color: #1a1c1e;
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+          ">🔗 Per gli Obblighi</h3>
+          <ul style="
+            color: #4a4a4a;
+            line-height: 1.5;
+            padding-left: 20px;
+          ">
+            <li>Il consenso è sempre prioritario</li>
+            <li>Nessun obbligo deve creare disagio</li>
+            <li>Comunicate apertamente eventuali limiti</li>
+            <li>È ok dire "non me la sento" o "non ora"</li>
+            <li>Vedete ogni obbligo come opportunità di crescita</li>
+            <li>Mantenete un approccio giocoso e leggero</li>
+            <li>Concentrate il focus sulla connessione, non sulla competizione</li>
+          </ul>
+        </div>
+  
         <p style="
           color: #4a4a4a;
           line-height: 1.5;
-          margin-bottom: 15px;
-        ">Closer è un gioco di carte progettato per approfondire e rafforzare le relazioni di coppia attraverso domande significative e momenti di condivisione autentica.</p>
+          margin-top: 25px;
+          text-align: center;
+          font-style: italic;
+        ">Ricordate: lo scopo è avvicinarvi e connettervi maggiormente, sempre nel rispetto reciproco dei vostri limiti e confini. 💕</p>
       </div>
-
-      <div style="margin-bottom: 25px;">
-        <h3 style="
-          color: #1a1c1e;
-          font-size: 1.1rem;
-          margin-bottom: 10px;
-        ">🎮 Come Giocare</h3>
-        <ul style="
-          color: #4a4a4a;
-          line-height: 1.5;
-          padding-left: 20px;
-          margin-bottom: 15px;
-        ">
-          <li>Il gioco si svolge a turno tra due giocatori</li>
-          <li>Cliccate sulla carta per girarla e rivelare una domanda</li>
-          <li>Leggete la domanda ad alta voce e rispondete con sincerità</li>
-          <li>Prendetevi il tempo necessario per rispondere e discutere</li>
-          <li>Cliccate nuovamente sulla carta per passare al turno successivo</li>
-        </ul>
-      </div>
-
-      <div>
-        <h3 style="
-          color: #1a1c1e;
-          font-size: 1.1rem;
-          margin-bottom: 10px;
-        ">💡 Consigli</h3>
-        <ul style="
-          color: #4a4a4a;
-          line-height: 1.5;
-          padding-left: 20px;
-        ">
-          <li>Scegliete un momento tranquillo senza distrazioni</li>
-          <li>Ascoltate con attenzione e senza giudicare</li>
-          <li>Siate onesti nelle vostre risposte</li>
-          <li>La modalità Tabù può essere attivata quando vi sentite pronti</li>
-          <li>Attiva la modalità intima per domande sull'intimità sessuale</li>
-        </ul>
-      </div>
-    </div>
-  `;
+    `;
 
     // Funzioni per mostrare/nascondere la guida
     const showGuide = () => {
