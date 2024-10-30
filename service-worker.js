@@ -1,29 +1,28 @@
-const CACHE_NAME = "closer-v1";
-const ASSETS_TO_CACHE = [
-  "./",
-  "./index.html",
-  "./style.css",
-  "./script.js",
-  "./db.js",
-  "./sounds/flip.mp3",
-  "./sounds/click.mp3",
-  "./favicon/favicon.svg",
-  "./favicon/favicon.ico",
-  "./favicon/apple-touch-icon.png",
-  "./favicon/favicon-96x96.png",
-  "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap",
+// Version of the cache
+const CACHE_VERSION = "v1";
+const CACHE_NAME = `closer-cache-${CACHE_VERSION}`;
+
+// List of resources to cache
+const RESOURCES_TO_CACHE = [
+  "/",
+  "/index.html",
+  "/style.css",
+  "/script.js",
+  "/db.js",
+  "/sounds/flip.mp3",
+  "/sounds/click.mp3",
 ];
 
-// Installazione del Service Worker
+// Install event - cache resources
 self.addEventListener("install", (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(ASSETS_TO_CACHE);
+      return cache.addAll(RESOURCES_TO_CACHE);
     })
   );
 });
 
-// Attivazione del Service Worker e pulizia delle vecchie cache
+// Activate event - clean up old caches
 self.addEventListener("activate", (event) => {
   event.waitUntil(
     caches.keys().then((cacheNames) => {
@@ -38,28 +37,45 @@ self.addEventListener("activate", (event) => {
   );
 });
 
-// Strategia Cache First con Network Fallback
+// Fetch event - serve from cache or network
 self.addEventListener("fetch", (event) => {
   event.respondWith(
-    caches.match(event.request).then((response) => {
-      if (response) {
-        return response; // Restituisce la risorsa dalla cache se presente
-      }
-      return fetch(event.request).then((response) => {
-        // Verifica che la risposta sia valida
-        if (!response || response.status !== 200 || response.type !== "basic") {
+    (async () => {
+      // Only cache same-origin requests and standard HTTP/HTTPS schemes
+      if (
+        event.request.url.startsWith(self.location.origin) &&
+        (event.request.url.startsWith("http:") ||
+          event.request.url.startsWith("https:"))
+      ) {
+        try {
+          // Try to get from cache first
+          const cachedResponse = await caches.match(event.request);
+          if (cachedResponse) {
+            return cachedResponse;
+          }
+
+          // If not in cache, fetch from network
+          const response = await fetch(event.request);
+
+          // Cache the response if it's valid
+          if (response.status === 200) {
+            const cache = await caches.open(CACHE_NAME);
+            cache.put(event.request, response.clone());
+          }
+
           return response;
+        } catch (error) {
+          console.error("Service Worker fetch error:", error);
+          // Return a fallback response if both cache and network fail
+          return new Response("Network error happened", {
+            status: 408,
+            headers: { "Content-Type": "text/plain" },
+          });
         }
+      }
 
-        // Clona la risposta perché è un one-time-use stream
-        const responseToCache = response.clone();
-
-        caches.open(CACHE_NAME).then((cache) => {
-          cache.put(event.request, responseToCache);
-        });
-
-        return response;
-      });
-    })
+      // For non-same-origin or non-HTTP(S) requests, just fetch from network
+      return fetch(event.request);
+    })()
   );
 });
