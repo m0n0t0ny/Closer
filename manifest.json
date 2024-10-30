@@ -6,8 +6,8 @@
   "background_color": "#8573f1",
   "display": "fullscreen",
   "orientation": "portrait",
-  "scope": "/",
-  "start_url": "/",
+  "scope": "/Closer/",
+  "start_url": "/Closer/",
   "icons": [
     {
       "src": "favicon/favicon-72x72.png",

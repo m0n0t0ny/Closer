@@ -1556,9 +1556,19 @@ document.addEventListener("DOMContentLoaded", () => {
   const game = new Closer();
 });
 
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./service-worker.js');
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker
+      .register("/Closer/service-worker.js")
+      .then((registration) => {
+        console.log(
+          "ServiceWorker registrato con successo:",
+          registration.scope
+        );
+      })
+      .catch((error) => {
+        console.log("Registrazione ServiceWorker fallita:", error);
+      });
   });
 }
 

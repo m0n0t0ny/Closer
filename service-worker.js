@@ -4,13 +4,14 @@ const CACHE_NAME = `closer-cache-${CACHE_VERSION}`;
 
 // List of resources to cache
 const RESOURCES_TO_CACHE = [
-  "./",
-  "index.html",
-  "style.css",
-  "script.js",
-  "db.js",
-  "sounds/flip.mp3",
-  "sounds/click.mp3",
+  "/Closer/",
+  "/Closer/index.html",
+  "/Closer/style.css",
+  "/Closer/script.js",
+  "/Closer/db.js",
+  "/Closer/sounds/flip.mp3",
+  "/Closer/sounds/click.mp3",
+  "/Closer/manifest.json",
 ];
 // Install event - cache resources
 self.addEventListener("install", (event) => {
