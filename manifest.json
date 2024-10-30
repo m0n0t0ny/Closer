@@ -2,7 +2,7 @@
   "name": "Closer",
   "short_name": "Closer",
   "description": "Un gioco di carte per rafforzare le relazioni di coppia",
-  "start_url": "/",
+  "start_url": "./",
   "display": "standalone",
   "background_color": "#f8faff",
   "theme_color": "#6c5ce7",

@@ -4,7 +4,7 @@ const CACHE_NAME = `closer-cache-${CACHE_VERSION}`;
 
 // List of resources to cache
 const RESOURCES_TO_CACHE = [
-  ".",
+  "./",
   "index.html",
   "style.css",
   "script.js",
