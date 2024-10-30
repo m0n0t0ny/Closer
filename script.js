@@ -19,6 +19,7 @@ class Closer {
 
   addShareButton() {
     const shareButton = document.createElement("button");
+    shareButton.classList.add("floating-share-button");
     shareButton.innerHTML = "📤 Condividi";
     shareButton.style.cssText = `
       position: fixed;
@@ -185,6 +186,7 @@ class Closer {
     `;
 
     const title = document.createElement("h3");
+    title.classList.add("share-title");
     title.textContent = "Condividi Obbligo";
     title.style.cssText = `
       color: #1a1c1e;
@@ -204,6 +206,7 @@ class Closer {
     `;
 
     const previewTitle = document.createElement("div");
+    previewTitle.classList.add("share-preview-title");
     previewTitle.textContent = "Anteprima";
     previewTitle.style.cssText = `
       font-size: 0.9rem;
@@ -266,7 +269,7 @@ class Closer {
       gap: 5px;
     `;
 
-    // Funzione per aggiornare la preview
+    // Funzioni di utility
     const updatePreview = () => {
       const text = getFormattedText();
       const svgString = this.generateSVG(text);
@@ -290,6 +293,7 @@ class Closer {
 
     // WhatsApp Button
     const whatsappBtn = document.createElement("button");
+    whatsappBtn.classList.add("share-button", "share-button-whatsapp");
     whatsappBtn.innerHTML = `💬<br>WhatsApp`;
     whatsappBtn.style.cssText = buttonStyle;
     whatsappBtn.addEventListener("click", async () => {
@@ -299,6 +303,7 @@ class Closer {
 
     // PNG Button
     const pngBtn = document.createElement("button");
+    pngBtn.classList.add("share-button", "share-button-png");
     pngBtn.innerHTML = `💾<br>Immagine`;
     pngBtn.style.cssText = buttonStyle;
     pngBtn.addEventListener("click", () => {
@@ -314,7 +319,7 @@ class Closer {
       return `${otherPlayer.name} ${this.currentCard.question} Entro il: ${formattedDate}`;
     };
 
-    // Aggiungi elementi al DOM
+    // Costruzione DOM
     previewContainer.appendChild(previewTitle);
     previewContainer.appendChild(imagePreview);
 
@@ -393,19 +398,8 @@ class Closer {
   // Modifica anche il createShareButton per WhatsApp
   createShareButton(text, icon, action) {
     const button = document.createElement("button");
+    button.classList.add("share-action-button");
     button.innerHTML = `${icon}<br>${text}`;
-    button.style.cssText = `
-      background: #6c5ae4;
-      color: white;
-      border: none;
-      border-radius: 12px;
-      padding: 15px;
-      font-size: 0.9rem;
-      cursor: pointer;
-      flex: 1;
-      max-width: 100px;
-      transition: all 0.3s ease;
-    `;
 
     button.addEventListener("click", async () => {
       const selectedDate = new Date(datePicker.value);
@@ -417,35 +411,16 @@ class Closer {
       switch (action) {
         case "whatsapp":
           const instructions = document.createElement("div");
-          instructions.style.cssText = `
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: white;
-            padding: 20px;
-            border-radius: 12px;
-            text-align: center;
-            z-index: 1002;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
-            max-width: 90%;
-            width: 400px;
-          `;
+          instructions.classList.add("whatsapp-instructions");
+
           instructions.innerHTML = `
-            <h3 style="margin-bottom: 15px; color: #1a1c1e;">Condivisione su WhatsApp</h3>
-            <p style="margin-bottom: 15px; color: #4a4a4a;">
+            <h3 class="whatsapp-instructions-title">Condivisione su WhatsApp</h3>
+            <p class="whatsapp-instructions-text">
               1. Attendi il download dell'immagine PNG<br>
               2. Si aprirà WhatsApp Web con il testo<br>
               3. Potrai allegare l'immagine appena scaricata
             </p>
-            <button id="continue" style="
-              background: #6c5ae4;
-              color: white;
-              border: none;
-              border-radius: 8px;
-              padding: 10px 20px;
-              cursor: pointer;
-            ">Ho capito</button>
+            <button id="continue" class="whatsapp-continue-button">Ho capito</button>
           `;
 
           document.body.appendChild(instructions);
@@ -477,32 +452,8 @@ class Closer {
 
   showNotification(message) {
     const notification = document.createElement("div");
-    notification.style.cssText = `
-      position: fixed;
-      top: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: #6c5ae4;
-      color: white;
-      padding: 12px 24px;
-      border-radius: 8px;
-      font-size: 14px;
-      font-weight: 600;
-      z-index: 1000;
-      animation: fadeInOut 2s forwards;
-    `;
+    notification.classList.add("game-notification");
     notification.textContent = message;
-
-    const style = document.createElement("style");
-    style.textContent = `
-      @keyframes fadeInOut {
-        0% { opacity: 0; transform: translate(-50%, -20px); }
-        10% { opacity: 1; transform: translate(-50%, 0); }
-        90% { opacity: 1; transform: translate(-50%, 0); }
-        100% { opacity: 0; transform: translate(-50%, -20px); }
-      }
-    `;
-    document.head.appendChild(style);
     document.body.appendChild(notification);
 
     setTimeout(() => {
@@ -714,128 +665,29 @@ class Closer {
 
   addGameGuide() {
     const helpButton = document.createElement("button");
+    helpButton.classList.add("help-button");
     helpButton.innerHTML = "❔";
-    helpButton.style.cssText = `
-      width: 40px;
-      height: 40px;
-      scale: 1/1;
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      padding: 10px;
-      background: #6c5ce7;
-      color: white;
-      border: none;
-      border-radius: 9999px;
-      font-size: 0.9rem;
-      cursor: pointer;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-      transition: all 0.3s ease;
-      z-index: 1000;
-    `;
 
-    // Crea il pannello delle istruzioni
     const guidePanel = document.createElement("div");
-    guidePanel.style.cssText = `
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%) scale(0.9);
-      width: 90%;
-      max-width: 500px;
-      background: white;
-      border-radius: 20px;
-      font-size: 14px;
-      padding: 30px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-      opacity: 0;
-      visibility: hidden;
-      transition: all 0.3s ease;
-      z-index: 1001;
-      max-height: 90vh;
-      overflow-y: auto;
-      
-      /* Nasconde scrollbar in Firefox */
-      scrollbar-width: none;
-      
-      /* Nasconde scrollbar in IE/Edge */
-      -ms-overflow-style: none;
-    `;
+    guidePanel.classList.add("guide-panel");
 
-    // Aggiunge stile per nascondere la scrollbar in Chrome/Safari
-    const style = document.createElement("style");
-    style.textContent = `
-      #gameGuidePanel::-webkit-scrollbar {
-        display: none;
-      }
-    `;
-    document.head.appendChild(style);
-
-    // Assegna ID al pannello per il selettore CSS
-    guidePanel.id = "gameGuidePanel";
-
-    // Crea l'overlay scuro
     const overlay = document.createElement("div");
-    overlay.style.cssText = `
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: rgba(0,0,0,0.7);
-      opacity: 0;
-      visibility: hidden;
-      transition: all 0.3s ease;
-      z-index: 1000;
-    `;
+    overlay.classList.add("guide-overlay");
 
-    // Contenuto della guida con padding aggiuntivo in fondo per miglior scrolling
     guidePanel.innerHTML = `
-      <div style="position: relative; padding-bottom: 20px;">
-        <h2 style="
-          color: #6c5ce7;
-          font-size: 1.5rem;
-          margin-bottom: 30px;
-          text-align: center;
-        ">Come si gioca</h2>
+      <div class="guide-content">
+        <h2 class="guide-title">Come si gioca</h2>
         
-        <button id="closeGuide" style="
-          position: absolute;
-          scale: 1/1;
-          top: -20px;
-          right: -10px;
-          border: none;
-          background: transparent;
-          color: #ea5957;
-          cursor: pointer;
-          font-size: 1.5rem;
-        ">×</button>
+        <button id="closeGuide" class="guide-close-button">×</button>
   
-        <div style="margin-bottom: 25px;">
-          <h3 style="
-            color: #1a1c1e;
-            font-size: 1.1rem;
-            margin-bottom: 10px;
-          ">📌 Scopo del Gioco</h3>
-          <p style="
-            color: #4a4a4a;
-            line-height: 1.5;
-            margin-bottom: 15px;
-          ">Closer è un gioco di carte pensato per rafforzare le relazioni di coppia attraverso la condivisione autentica e il dialogo profondo.</p>
+        <div class="guide-section">
+          <h3 class="guide-section-title">📌 Scopo del Gioco</h3>
+          <p class="guide-text">Closer è un gioco di carte pensato per rafforzare le relazioni di coppia attraverso la condivisione autentica e il dialogo profondo.</p>
         </div>
   
-        <div style="margin-bottom: 25px;">
-          <h3 style="
-            color: #1a1c1e;
-            font-size: 1.1rem;
-            margin-bottom: 10px;
-          ">🎮 Regole Base</h3>
-          <ul style="
-            color: #4a4a4a;
-            line-height: 1.5;
-            padding-left: 20px;
-            margin-bottom: 15px;
-          ">
+        <div class="guide-section">
+          <h3 class="guide-section-title">🎮 Regole Base</h3>
+          <ul class="guide-list">
             <li>Il gioco si svolge a turno tra due giocatori</li>
             <li>Cliccate sulla carta per rivelare una domanda</li>
             <li>Leggete la domanda e rispondete con sincerità</li>
@@ -843,19 +695,10 @@ class Closer {
             <li>Cliccate di nuovo per passare al turno successivo</li>
           </ul>
         </div>
-  
-        <div style="margin-bottom: 25px;">
-          <h3 style="
-            color: #1a1c1e;
-            font-size: 1.1rem;
-            margin-bottom: 10px;
-          ">💡 Linee Guida Generali</h3>
-          <ul style="
-            color: #4a4a4a;
-            line-height: 1.5;
-            padding-left: 20px;
-            margin-bottom: 15px;
-          ">
+
+        <div class="guide-section">
+          <h3 class="guide-section-title">💡 Linee Guida Generali</h3>
+          <ul class="guide-list">
             <li>Scegliete un momento tranquillo senza distrazioni</li>
             <li>Ascoltate con attenzione e senza giudicare</li>
             <li>Siate onesti nelle risposte</li>
@@ -864,36 +707,19 @@ class Closer {
             <li>Concludete sempre con qualcosa di positivo sull'altrə</li>
           </ul>
         </div>
-  
-        <div style="margin-bottom: 25px;">
-          <h3 style="
-            color: #1a1c1e;
-            font-size: 1.1rem;
-            margin-bottom: 10px;
-          ">💣 Per Domande Tabù</h3>
-          <ul style="
-            color: #4a4a4a;
-            line-height: 1.5;
-            padding-left: 20px;
-            margin-bottom: 15px;
-          ">
+
+        <div class="guide-section">
+          <h3 class="guide-section-title">💣 Per Domande Tabù</h3>
+          <ul class="guide-list">
             <li>Ricordate che sono pensate per essere scomode</li>
             <li>L'obiettivo è crescere insieme, non ferirsi</li>
             <li>Potete saltare le domande troppo difficili</li>
           </ul>
         </div>
-  
-        <div>
-          <h3 style="
-            color: #1a1c1e;
-            font-size: 1.1rem;
-            margin-bottom: 10px;
-          ">🔗 Per gli Obblighi</h3>
-          <ul style="
-            color: #4a4a4a;
-            line-height: 1.5;
-            padding-left: 20px;
-          ">
+
+        <div class="guide-section">
+          <h3 class="guide-section-title">🔗 Per gli Obblighi</h3>
+          <ul class="guide-list">
             <li>Il consenso è sempre prioritario</li>
             <li>Nessun obbligo deve creare disagio</li>
             <li>Comunicate apertamente eventuali limiti</li>
@@ -903,15 +729,8 @@ class Closer {
             <li>Concentrate il focus sulla connessione, non sulla competizione</li>
           </ul>
         </div>
-  
-        <p style="
-          color: #4a4a4a;
-          line-height: 1.5;
-          margin-top: 25px;
-          text-align: center;
-          font-style: italic;
-        ">Ricordate: lo scopo è avvicinarvi e connettervi maggiormente, sempre nel rispetto reciproco dei vostri limiti e confini. 💕</p>
-      </div>
+
+        <p class="guide-footer">Ricordate: lo scopo è avvicinarvi e connettervi maggiormente, sempre nel rispetto reciproco dei vostri limiti e confini. 💕</p>
     `;
 
     // Funzioni per mostrare/nascondere la guida
@@ -1025,7 +844,6 @@ class Closer {
       }
     });
 
-    // Stile per il container principale
     toggleContainer.innerHTML = `
       <div class="toggles-wrapper">
         ${categoryConfigs
@@ -1033,9 +851,9 @@ class Closer {
             (config) => `
           <div class="toggle-wrapper" data-category="${config.id}">
             <label class="toggle">
-              <input type="checkbox" id="${config.id}Toggle" ${
-              config.checked ? "checked" : ""
-            }>
+              <input type="checkbox" class="toggle-input" id="${
+                config.id
+              }Toggle" ${config.checked ? "checked" : ""}>
               <span class="toggle-slider" style="background-color: ${
                 config.checked ? config.color : "#ccc"
               }"></span>
@@ -1048,129 +866,26 @@ class Closer {
       </div>
     `;
 
-    const style = document.createElement("style");
-    style.textContent = `
-      .toggles-container {
-        margin-top: 1rem;
-        display: flex;
-        justify-content: center;
-        gap: 1rem;
-        flex-wrap: wrap;
-      }
-    
-      .toggles-wrapper {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-        gap: 10px;
-        padding: 16px;
-        background: white;
-        border-radius: 24px;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        max-width: 600px;
-        width: 90%;
-      }
-    
-      .toggle-wrapper {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        padding: 8px;
-        border-radius: 12px;
-        transition: background-color 0.3s ease;
-      }
-  
-      .toggle-wrapper:hover {
-        background-color: rgba(0,0,0,0.05);
-      }
-    
-      .toggle {
-        position: relative;
-        display: inline-block;
-        width: 50px;
-        height: 24px;
-        flex-shrink: 0;
-      }
-    
-      .toggle input {
-        opacity: 0;
-        width: 0;
-        height: 0;
-      }
-    
-      .toggle-slider {
-        position: absolute;
-        cursor: pointer;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background-color: #ccc;
-        transition: .4s;
-        border-radius: 24px;
-      }
-    
-      .toggle-slider:before {
-        position: absolute;
-        content: "";
-        height: 16px;
-        width: 16px;
-        left: 4px;
-        bottom: 4px;
-        background-color: white;
-        transition: .4s;
-        border-radius: 50%;
-      }
-    
-      .toggle input:checked + .toggle-slider:before {
-        transform: translateX(26px);
-      }
-    
-      .toggle-label {
-        font-size: 0.9rem;
-        color: #666;
-        user-select: none;
-        white-space: nowrap;
-      }
-  
-      @media (max-width: 480px) {
-        .toggles-wrapper {
-          grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-        }
-        
-        .toggle-label {
-          font-size: 0.8rem;
-        }
-      }
-    `;
-
-    document.head.appendChild(style);
-
     // Aggiunge i listener per ogni toggle
     categoryConfigs.forEach((config) => {
       const toggle = toggleContainer.querySelector(`#${config.id}Toggle`);
       if (toggle) {
         toggle.addEventListener("change", (e) => {
-          // Aggiorna lo stato della categoria
           this[`${config.id}Enabled`] = e.target.checked;
-
-          // Se è una modalità speciale, aggiorna anche quella proprietà
           if (config.property) {
             this[config.property] = e.target.checked;
           }
 
-          // Aggiorna il colore dello slider
           const slider = toggle.nextElementSibling;
           slider.style.backgroundColor = e.target.checked
             ? config.color
             : "#ccc";
 
-          // Controlla che ci sia almeno una categoria attiva
           const anyEnabled = categoryConfigs.some(
             (cat) => this[`${cat.id}Enabled`]
           );
 
           if (!anyEnabled) {
-            // Se nessuna categoria è attiva, riattiva questa e mostra un messaggio
             e.target.checked = true;
             this[`${config.id}Enabled`] = true;
             if (config.property) {
@@ -1181,7 +896,6 @@ class Closer {
               "Almeno una categoria deve essere attiva! 🎯"
             );
           } else {
-            // Reinizializza il mazzo con le nuove impostazioni
             this.initializeFullDeck();
             this.shuffleDeck();
           }
@@ -1241,85 +955,27 @@ class Closer {
 
   getPlayerNames() {
     const formHTML = `
-      <div class="players-form" style="
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: rgba(0, 0, 0, 0.8);
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        z-index: 1000;
-      ">
-        <div style="
-          background: white;
-          padding: 2rem;
-          border-radius: 1rem;
-          box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-          text-align: center;
-        ">
-          <h2 style="margin-bottom: 1.5rem; color: #1a1c1e;">Nomi Giocatori</h2>
-          <div style="display: flex; flex-direction: column; gap: 1rem;">
+      <div class="players-form">
+        <div class="players-form-content">
+          <h2 class="players-form-title">Nomi Giocatori</h2>
+          <div class="players-form-inputs">
             <input 
               type="text" 
               id="player1" 
+              class="player-input"
               placeholder="Giocatore 1" 
-              maxlength="20"
-              style="
-                padding: 0.5rem;
-                border: 2px solid #6c5ce7;
-                border-radius: 0.5rem;
-                font-size: 1rem;
-                text-align: center;
-              ">
+              maxlength="20">
             <input 
               type="text" 
               id="player2" 
+              class="player-input"
               placeholder="Giocatore 2" 
-              maxlength="20"
-              style="
-                padding: 0.5rem;
-                border: 2px solid #6c5ce7;
-                border-radius: 0.5rem;
-                font-size: 1rem;
-                text-align: center;
-              ">
-            <button id="startGame" style="
-              padding: 0.5rem 1rem;
-              background: #6c5ce7;
-              color: white;
-              border: none;
-              border-radius: 0.5rem;
-              font-size: 1rem;
-              cursor: pointer;
-              transition: all 0.3s ease;
-            ">Inizia</button>
+              maxlength="20">
+            <button id="startGame" class="start-game-button">Inizia</button>
           </div>
         </div>
       </div>
     `;
-
-    const style = document.createElement("style");
-    style.textContent = `
-      .players-form input::placeholder {
-        color: #666;
-        font-size: 1rem;
-      }
-      
-      .players-form input {
-        text-align: center;
-        font-size: 1rem;
-      }
-      
-      .players-form input:focus {
-        outline: none;
-        border-color: #6c5ce7;
-        box-shadow: 0 0 0 2px rgba(108, 92, 231, 0.2);
-      }
-    `;
-    document.head.appendChild(style);
 
     const formContainer = document.createElement("div");
     formContainer.innerHTML = formHTML;
