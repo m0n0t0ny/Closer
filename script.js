@@ -15,7 +15,6 @@ class Closer {
     this.initializeElements();
     this.addIntimacyToggle();
     this.initializeFullDeck();
-    this.addInstructions();
     this.getPlayerNames();
     this.addGameGuide();
     this.addShareButton();
@@ -1118,212 +1117,6 @@ class Closer {
     }
   }
 
-  addInstructions() {
-    const instructionsElement = document.createElement("div");
-    instructionsElement.id = "tabu-instructions";
-    instructionsElement.style.cssText = `
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      width: 100%;
-      background: rgba(255, 71, 87, 1);
-      color: white;
-      box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
-      z-index: 1000;
-      transform: translateY(calc(100% - 45px));
-      transition: transform 0.3s ease-out;
-    `;
-
-    const header = document.createElement("div");
-    header.style.cssText = `
-      min-height: 45px;
-      padding: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-      background: rgba(255, 71, 87, 1);
-      flex-wrap: wrap;
-      gap: 4px;
-    `;
-
-    const arrow = document.createElement("div");
-    arrow.innerHTML = "↕";
-    arrow.style.cssText = `
-      font-size: 1.2rem;
-      transform: rotate(180deg);
-      transition: transform 0.5s ease;
-      line-height: 1;
-    `;
-
-    const title = document.createElement("span");
-    title.textContent = "Suggerimenti per Tabù";
-    title.style.cssText = `
-      margin-left: 8px;
-      font-weight: 600;
-      line-height: 1.2;
-    `;
-
-    const contentWrapper = document.createElement("div");
-    contentWrapper.style.cssText = `
-      display: flex;
-      justify-content: center;
-      width: 100%;
-      opacity: 0;
-      max-height: 0;
-      overflow: hidden;
-      transition: all 0.5s ease-out;
-    `;
-
-    const contentInner = document.createElement("div");
-    contentInner.style.cssText = `
-      max-width: 420px;
-      width: 100%;
-      padding: 20px;
-    `;
-
-    contentInner.innerHTML = `
-      <div class="instructions-content">
-        <div class="instructions-header">
-          <span class="instructions-icon">💡</span>
-          Prima di rispondere ricorda:
-        </div>
-        <ul class="instructions-list">
-          <li>Queste domande sono pensate per essere scomode</li>
-          <li>L'obiettivo è crescere insieme, non ferirsi</li>
-          <li>Se una domanda è troppo difficile, potete saltarla</li>
-          <li>Cercate di mantenere un dialogo costruttivo</li>
-          <li>È ok prendersi una pausa se le emozioni sono troppo intense</li>
-          <li>Concludete sempre con qualcosa che amate dell'altro</li>
-        </ul>
-      </div>
-    `;
-
-    const style = document.createElement("style");
-    style.textContent = `
-      .instructions-content {
-        font-size: 0.95rem;
-        line-height: 1.5;
-      }
-
-      .instructions-header {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        margin-bottom: 12px;
-        font-weight: 600;
-      }
-
-      .instructions-icon {
-        font-size: 1.2rem;
-      }
-
-      .instructions-list {
-        list-style: none;
-        padding: 0;
-        margin: 0;
-      }
-
-      .instructions-list li {
-        font-size: 12px;
-        padding-left: 16px;
-        position: relative;
-        margin-bottom: 8px;
-        line-height: 12px !important;
-      }
-
-      .instructions-list li:before {
-        content: "•";
-        position: absolute;
-        left: 0;
-        color: rgba(255, 255, 255, 0.8);
-      }
-
-      .instructions-list li:last-child {
-        margin-bottom: 0;
-      }
-
-      @media (max-width: 480px) {
-        .instructions-content {
-          font-size: 0.9rem;
-        }
-        
-        .instructions-list li {
-          margin-bottom: 6px;
-        }
-      }
-    `;
-    document.head.appendChild(style);
-
-    let isExpanded = false;
-
-    const openInstructions = () => {
-      isExpanded = true;
-      contentWrapper.style.maxHeight = "none";
-      contentWrapper.style.opacity = "1";
-      const contentHeight = contentInner.offsetHeight + 40;
-      const maxAvailableHeight = window.innerHeight * 0.7;
-      const finalHeight = Math.min(contentHeight, maxAvailableHeight);
-
-      contentWrapper.style.maxHeight = `${finalHeight}px`;
-      contentWrapper.style.overflow =
-        contentHeight > maxAvailableHeight ? "auto" : "hidden";
-
-      instructionsElement.style.transform = "translateY(0)";
-      arrow.style.transform = "rotate(0deg)";
-    };
-
-    const closeInstructions = () => {
-      isExpanded = false;
-      instructionsElement.style.transform = "translateY(calc(100% - 45px))";
-      arrow.style.transform = "rotate(180deg)";
-      contentWrapper.style.opacity = "0";
-      contentWrapper.style.maxHeight = "0";
-    };
-
-    instructionsElement.addEventListener("click", (event) => {
-      if (event.target === instructionsElement && isExpanded) {
-        closeInstructions();
-      }
-    });
-
-    header.addEventListener("click", (event) => {
-      event.stopPropagation();
-      if (isExpanded) {
-        closeInstructions();
-      } else {
-        openInstructions();
-      }
-    });
-
-    contentWrapper.addEventListener("click", (event) => {
-      event.stopPropagation();
-    });
-
-    header.appendChild(arrow);
-    header.appendChild(title);
-    contentWrapper.appendChild(contentInner);
-    instructionsElement.appendChild(header);
-    instructionsElement.appendChild(contentWrapper);
-
-    document.body.appendChild(instructionsElement);
-  }
-
-  hideTabuInstructions() {
-    const instructionsElement = document.getElementById("tabu-instructions");
-    if (instructionsElement) {
-      instructionsElement.style.transform = "translateY(calc(100% - 45px))";
-      const arrow = instructionsElement.querySelector(
-        "div:first-child > div:first-child"
-      );
-      if (arrow) {
-        arrow.style.transform = "rotate(180deg)";
-      }
-    }
-  }
-
   initializeFullDeck() {
     this.fullDeck = db.categories
       .filter((category) => {
@@ -1500,29 +1293,17 @@ class Closer {
     if (!this.isFlipped) {
       this.playSound("flip");
 
-      // Otteniamo la carta corrente prima di rimuoverla
       this.currentCard = this.currentDeck[this.currentDeck.length - 1];
-
-      // Ora possiamo usare this.currentCard in sicurezza
       this.categoryElement.textContent = this.currentCard.category;
       this.categoryElement.style.color = this.currentCard.color;
 
       if (this.currentCard.isObligation) {
-        // Ottieni il giocatore che deve eseguire l'obbligo
         const otherPlayer = this.players[(this.currentPlayerIndex + 1) % 2];
-
-        // Modifica il testo della domanda per includere il nome del giocatore
         this.questionElement.textContent = `${otherPlayer.name} ${this.currentCard.question}`;
-
-        // Mostra il pulsante di condivisione
         this.shareButton.style.display = "block";
       } else {
         this.questionElement.textContent = this.currentCard.question;
         this.shareButton.style.display = "none";
-      }
-
-      if (this.currentCard.isTabu) {
-        this.showTabuInstructions();
       }
 
       // Rimuoviamo la carta dal mazzo dopo averla usata
@@ -1543,21 +1324,7 @@ class Closer {
       this.cardElement.classList.remove("flipped");
       this.isFlipped = false;
 
-      this.hideTabuInstructions();
       this.switchPlayer();
-    }
-  }
-
-  showTabuInstructions() {
-    const instructionsElement = document.getElementById("tabu-instructions");
-    if (instructionsElement) {
-      instructionsElement.style.transform = "translateY(0)";
-      const arrow = instructionsElement.querySelector(
-        "div:first-child > div:first-child"
-      );
-      if (arrow) {
-        arrow.style.transform = "rotate(0deg)";
-      }
     }
   }
 

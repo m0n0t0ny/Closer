@@ -204,15 +204,6 @@ const db = {
         "Quale mio comportamento ti ha fatto sentire traditə o abbandonatə?",
         "Quale aspetto del mio modo di amare trovi deludente?",
       ],
-      instructions: `
-        💡 Prima di rispondere ricorda:
-        - Queste domande sono pensate per essere scomode
-        - L'obiettivo è crescere insieme, non ferirsi
-        - Se una domanda è troppo difficile, potete saltarla
-        - Cercate di mantenere un dialogo costruttivo
-        - È ok prendersi una pausa se le emozioni sono troppo intense
-        - Concludete sempre con qualcosa che amate dell'altrə
-      `,
     },
     {
       id: "obligations",
@@ -242,34 +233,6 @@ const db = {
         "si impegna a farmi 3 complimenti sinceri ogni giorno per una settimana",
         "si impegna a comprare e indossare un indumento a mia scelta",
       ],
-      instructions: `
-        💡 Ricorda che gli obblighi sono un'opportunità, non un vincolo. Lo scopo è avvicinarvi e connettervi maggiormente, non allontanarvi o creare tensioni. Sii apertə a nuove esperienze ma sempre nel rispetto dei tuoi limiti e di quelli del partner.
-
-        • Il consenso è sempre la priorità
-        - Nessun obbligo deve mai farti sentire a disagio o in pericolo
-        - Se qualcosa ti mette ansia, parlane apertamente col partner
-        - È perfettamente ok dire "non me la sento" o "non ora"
-        - Non usare mai gli obblighi per forzare limiti inappropriati
-
-        • Focus sulla connessione
-        - Gli obblighi sono un modo per esplorare nuove dimensioni insieme
-        - L'obiettivo è rafforzare l'intimità e la fiducia reciproca
-        - Non è una competizione o un modo per "vincere" sull'altrə
-        - Cerca di vedere ogni obbligo come un'opportunità di crescita
-
-        • Comunicazione aperta
-        - Discutete apertamente di eventuali modifiche agli obblighi
-        - Stabilite insieme limiti e confini chiari
-        - Siate onesti riguardo le vostre sensazioni
-        - Create un ambiente sicuro per esprimere dubbi o preoccupazioni
-
-        • Divertimento e leggerezza
-        - Mantieni un approccio giocoso e leggero
-        - Non prenderti troppo sul serio
-        - Goditi il processo di scoperta reciproca
-        - Celebra i momenti di connessione che si creano
-      `,
-      isIntimate: true,
     },
   ],
 };
