@@ -6,6 +6,7 @@
   "background_color": "#8573f1",
   "display": "fullscreen",
   "orientation": "portrait",
+  "display_override": ["fullscreen", "minimal-ui"],
   "scope": "/Closer/",
   "start_url": "/Closer/",
   "icons": [
