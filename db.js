@@ -243,7 +243,7 @@ const db = {
         "si impegna a comprare e indossare un indumento a mia scelta",
       ],
       instructions: `
-        💡 Ricorda che gli obblighi sono un'opportunità, non un vincolo:
+        💡 Ricorda che gli obblighi sono un'opportunità, non un vincolo. Lo scopo è avvicinarvi e connettervi maggiormente, non allontanarvi o creare tensioni. Sii apertə a nuove esperienze ma sempre nel rispetto dei tuoi limiti e di quelli del partner.
 
         • Il consenso è sempre la priorità
         - Nessun obbligo deve mai farti sentire a disagio o in pericolo
@@ -268,8 +268,6 @@ const db = {
         - Non prenderti troppo sul serio
         - Goditi il processo di scoperta reciproca
         - Celebra i momenti di connessione che si creano
-
-        💡 Ricorda: Lo scopo è avvicinarvi e connettervi maggiormente, non allontanarvi o creare tensioni. Sii apertə a nuove esperienze ma sempre nel rispetto dei tuoi limiti e di quelli del partner.
       `,
       isIntimate: true,
     },
